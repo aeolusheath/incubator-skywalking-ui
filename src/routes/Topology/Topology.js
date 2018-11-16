@@ -18,7 +18,7 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Icon, Radio, Select, Button } from 'antd';
+import { Row, Col, Card, Icon, Radio, Button } from 'antd';
 import { ChartCard } from '../../components/Charts';
 import { AppTopology } from '../../components/Topology';
 import { Panel } from '../../components/Page';
@@ -27,10 +27,10 @@ import DescriptionList from '../../components/DescriptionList';
 import { redirect } from '../../utils/utils';
 import styles from './Topology.less';
 import ControlPanel from '../../components/ControlPanel';
-
+import CustomSelect from './CustomeSelect/CustomSelect';
 
 const { Description } = DescriptionList;
-const { Option } = Select;
+// const { Option } = Select;
 
 const colResponsiveProps = {
   xs: 24,
@@ -187,7 +187,8 @@ export default class Topology extends PureComponent {
     return result;
   }
   render() {
-    const { data, variables: { appFilters = [] } } = this.props.topology;
+    // const { data, variables: { appFilters = [] } } = this.props.topology;
+    const { data } = this.props.topology;
     const { layout = 0 } = data;
     const topologData = this.filter();
     return (
@@ -198,7 +199,11 @@ export default class Topology extends PureComponent {
             <ChartCard
               className={styles.topoWrapper}
             >
-              <Select
+              <CustomSelect
+                options={data.getClusterTopology.nodes.filter(_ => _.sla)}
+                onSelectChange={this.handleFilterApplication}
+              />
+              {/* <Select
                 mode="tags"
                 style={{ width: '100%', marginBottom: 20 }}
                 placeholder="Filter application"
@@ -208,7 +213,7 @@ export default class Topology extends PureComponent {
               >
                 {data.getClusterTopology.nodes.filter(_ => _.sla)
                   .map(_ => <Option key={_.name}>{_.name}</Option>)}
-              </Select>
+              </Select> */}
               <Radio.Group
                 value={layout}
                 onChange={this.handleLayoutChange}

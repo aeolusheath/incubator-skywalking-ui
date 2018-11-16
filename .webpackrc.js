@@ -24,11 +24,10 @@ const config = {
 if (process.env.NO_MOCK) {
   config.proxy = {
     "/api":{
-      target: "http://localhost:12800",
+      target: "http://localhost:3000",      
       changeOrigin: true,
       pathRewrite:  (path) => {
-        console.log(path);
-        return "/graphql"
+        return "http://localhost:3000"+path
       }
     }
   };
