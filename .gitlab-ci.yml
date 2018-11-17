@@ -8,21 +8,21 @@ build_job:
   stage: build
   environment: testDev
   script: 
-    - "echo 'start build job'"
-    - "npm install"
-    - "npm run build"
+    - echo 'start build job'
+    - npm install
+    - npm run build
   only:
-    -dev
+    - dev
 
 test_job:
   stage: test
   environment: testEnv 
   script: "echo 'execute-script-for-job2'"
   only:
-    -dev
+    - dev
 
 deploy_job:
   environment: testDep
   stage: deploy
   script:
-    - "echo 'start deploy'"
+    - echo 'start deploy'
