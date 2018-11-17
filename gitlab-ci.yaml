@@ -1,0 +1,28 @@
+stages:
+  build
+  test
+  deploy
+
+build_job:
+  image: node:10.2.0
+  stage: build
+  environment: testDev
+  script: 
+    - "echo 'start build job'"
+    - "npm install"
+    - "npm run build"
+  only:
+    -dev
+
+test_job:
+  stage: test
+  environment: testEnv 
+  script: "echo 'execute-script-for-job2'"
+  only:
+    -dev
+
+deploy_job:
+  environment: testDep
+  stage: deploy
+  script:
+    - "echo 'start deploy'"
