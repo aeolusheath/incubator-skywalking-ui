@@ -54,9 +54,12 @@ const dynamicWrapper = (app, models, component) => {
   // () => import('module')
   return dynamic({
     app,
-    models: () => models.filter(
-      model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)
-    ),
+    models: () => {
+      console.log(app, "what is this")
+      return models.filter(
+        model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)
+      )
+    },
     // add routerData prop
     component: () => {
       if (!routerDataCache) {
@@ -94,8 +97,11 @@ export const getRouterData = (app) => {
     '/monitor/dashboard': {
       component: dynamicWrapper(app, ['dashboard'], () => import('../routes/Dashboard/Dashboard')),
     },
-    '/monitor/topology': {
+    '/monitor/topology-backup': {
       component: dynamicWrapper(app, ['topology'], () => import('../routes/Topology/Topology')),
+    },
+    '/monitor/topology': {
+      component: dynamicWrapper(app, ['topology', 'dashboard'], () => import('../routes/Topology-new/Topology-new')),
     },
     '/monitor/service': {
       component: dynamicWrapper(app, ['service'], () => import('../routes/Service/Service')),

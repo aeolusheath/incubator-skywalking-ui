@@ -105,6 +105,7 @@ export function generateModal({ namespace, dataQuery, optionsQuery, defaultOptio
       *fetchData({ payload }, { call, put }) {
         const { variables, reducer = undefined } = payload;
         const response = yield call(queryService, namespace, { variables, query: dataQuery });
+        console.log("11111")
         if (!response.data) {
           return;
         }
@@ -234,6 +235,8 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
       },
       *fetchData({ payload }, { call, put }) {
         const { variables, reducer = undefined } = payload;
+        // console.log(reducer, "reducer----->>>>")
+        // console.log(payload, reducer, put, "in models.js")
         const response = yield call(exec, { variables, query: dataQuery });
         if (!response.data) {
           return;

@@ -97,6 +97,57 @@ query TopologyClientMetric($duration: Duration!, $idsC: [ID!]!) {
 }
 `
 
+const speedMetricQuery = `
+query SpeedMetric($duration: Duration!, $idsP: [ID!]!) {
+  fastRequest: getValues(metric: {
+    name: "one_second_request",
+    ids: $idsP
+  }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  mediumRequest: getValues(metric: {
+    name: "three_second_request",
+    ids: $idsP
+  }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  lowRequest: getValues(metric: {
+    name: "five_second_request",
+    ids: $idsP
+  }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  slowRequest: getValues(metric: {
+    name: "slow_request",
+    ids: $idsP
+  }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  errorRequest: getValues(metric: {
+    name: "error_request",
+    ids: $idsP
+  }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+}
+`
+
+
 export default base({
   namespace: 'topology',
   state: {
@@ -145,6 +196,22 @@ export default base({
     }
   `,
   effects: {
+    *fetchRequestStatistic({ payload }, { call, put }) {
+      console.log(payload, "payload----->>>>")
+      const { idsP, duration } = payload.variables
+      console.log(idsP, duration, "abcdefgggg-------------------->>>>")
+      const data = yield call(exec, { query: speedMetricQuery, variables: { idsP, duration } })
+      console.log(data, "what is data-----kkkkkkkkkkkkkkkkkkkkkkkkkkk------------------------------")
+
+      // const { idsS, duration } = payload.variables
+
+      // if (idsS && idsS.length > 0) {
+      //   const aaa = yield call(exec, { query: serverMetricQuery, variables: { idsS, duration } });
+      //   console.log(aaa, "探清水河")
+      //   // metrics = { ...metrics, ...sData };
+      // }
+
+    },
     *fetchMetrics({ payload }, { call, put }) {
       const { ids, idsS, idsC, duration } = payload.variables;
       const { data = {} } = yield call(exec, { query: metricQuery, variables: { ids, duration } });
@@ -157,6 +224,7 @@ export default base({
         const { data: cData = {}  } = yield call(exec, { query: clientMetricQuery, variables: { idsC, duration } });
         metrics = { ...metrics, ...cData };
       }
+      // console.log(idsC, "what is this variable---------->>>>>")
       const { cpmS = { values:[] }, cpmC = { values:[] }, latencyS = { values:[] }, latencyC = { values:[] } } = metrics;
       metrics = {
         ...metrics,

@@ -91,6 +91,9 @@ export default class Base extends Component {
 
   loadMetrics = (elementes) => {
     const { onLoadMetircs } = this.props;
+    // console.log("return")
+    // return
+    console.log(elementes, "what is elementessss-------->>>>>>")
     if (onLoadMetircs) {
       onLoadMetircs(
         elementes.nodes.filter(_ => _.data.id.indexOf('USER') < 0).map(_ => _.data.id),
@@ -133,7 +136,7 @@ export default class Base extends Component {
     }
     const nodes = this.cy.nodes();
     this.cy.json({ elements: nextElements });
-    
+
     if (this.bindEvent) {
       this.bindEvent(this.cy);
     }

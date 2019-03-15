@@ -34,6 +34,7 @@ import RankList from '../../components/RankList';
 }))
 export default class Dashboard extends PureComponent {
   handleDurationChange = (variables) => {
+    console.log("Dash----->>>> handle change something")
     const { dispatch } = this.props;
     dispatch({
       type: 'dashboard/fetchData',

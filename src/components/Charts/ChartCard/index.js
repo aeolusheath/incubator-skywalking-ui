@@ -30,12 +30,16 @@ const ChartCard = ({
   total,
   footer,
   children,
+  chartBodyStyle = {},
+  hasChartTop = true,
   ...rest
 }) => {
   const content = (
     <div className={styles.chartCard}>
+      { hasChartTop && (
       <div
         className={classNames(styles.chartTop, { [styles.chartTopMargin]: !children && !footer })}
+        style={chartBodyStyle}
       >
         <div className={styles.avatar}>{avatar}</div>
         <div className={styles.metaWrap}>
@@ -49,6 +53,7 @@ const ChartCard = ({
           )}
         </div>
       </div>
+      )}
       {children && (
         <div className={styles.content} style={{ height: contentHeight || 'auto' }}>
           <div className={contentHeight && styles.contentFixed}>{children}</div>
@@ -63,7 +68,7 @@ const ChartCard = ({
   );
 
   return (
-    <Card bodyStyle={{ padding: '20px 24px 8px 24px' }} {...rest}>
+    <Card bodyStyle={Object.assign({ padding: '20px 24px 8px 24px' }, chartBodyStyle)} {...rest}>
       {
         <Spin spinning={loading} wrapperClassName={styles.spin}>
           {content}

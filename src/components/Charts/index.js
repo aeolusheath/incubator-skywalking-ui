@@ -28,6 +28,7 @@ import Field from './Field';
 import StackBar from './StackBar';
 import Sankey from './Sankey';
 import HeatMap from './HeatMap';
+import Scatter from './Scatter'
 import EndpointDeps from './EndpointDeps';
 
 const yuan = val => `&yen; ${numeral(val).format('0,0')}`;
@@ -46,6 +47,7 @@ const Charts = {
   Sankey,
   HeatMap,
   EndpointDeps,
+  Scatter,
 };
 
 export {
@@ -62,5 +64,6 @@ export {
   StackBar,
   Sankey,
   HeatMap,
+  Scatter,
   EndpointDeps,
 };
