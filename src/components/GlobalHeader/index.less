@@ -22,6 +22,37 @@
   background: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
   position: relative;
+  // add custom style
+  height: 50px;
+  .logo {
+    height: 50px;
+    line-height: 43px;
+  }
+  :global {
+    .ant-divider-vertical {
+      top: -5px;
+      margin-right: 5px;
+    }
+  }
+  i.trigger {
+    line-height: 59px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    font-size: 18px;
+  }
+  .right {
+    line-height: 50px;
+      .account {
+        .avatar {
+          margin: 0 8px 0 0;
+        }
+    }
+    :global(.ant-badge) {
+      position: relative;
+      top: 3px;
+    }
+  }
 }
 
 :global {
