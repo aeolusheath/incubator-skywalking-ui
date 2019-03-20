@@ -55,7 +55,6 @@ const dynamicWrapper = (app, models, component) => {
   return dynamic({
     app,
     models: () => {
-      console.log(app, "what is this")
       return models.filter(
         model => modelNotExisted(app, model)).map(m => import(`../models/${m}.js`)
       )
@@ -101,7 +100,9 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['topology'], () => import('../routes/Topology/Topology')),
     },
     '/monitor/topology': {
-      component: dynamicWrapper(app, ['topology', 'dashboard'], () => import('../routes/Topology-new/Topology-new')),
+      // 散点图需要   dashboard
+      // 服务列表需要 service
+      component: dynamicWrapper(app, ['topology', 'dashboard', 'service'], () => import('../routes/Topology-new/Topology-new')),
     },
     '/monitor/service': {
       component: dynamicWrapper(app, ['service'], () => import('../routes/Service/Service')),

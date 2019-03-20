@@ -57,7 +57,7 @@ const middleColResponsiveProps = {
 })
 export default class Service extends PureComponent {
   componentDidMount() {
-    const {...propsData} = this.props;
+    const { ...propsData } = this.props;
     propsData.dispatch({
       type: 'service/initOptions',
       payload: { variables: propsData.globalVariables },

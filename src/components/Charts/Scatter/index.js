@@ -129,7 +129,6 @@ class HeatMap extends Component {
       display: { range },
       raw: { range: rawRange },
     } = duration;
-
     const source = [];
     let maxResponseTimeOffset = 0;
     for (let i = 0; i < nodes.length; i += 1) {
@@ -175,6 +174,7 @@ class HeatMap extends Component {
       }
       mergeSource.push(...source);
     }
+    // 配置 x 轴  和 y 轴
     const cols = {
       datetime: {
         type: 'cat',
@@ -187,7 +187,7 @@ class HeatMap extends Component {
         tickCount: 5,
       },
     };
-    // console.log(mergeSource, "mergeSource--------------------------------------------------")
+    // console.log(cols, "mergeSource--------------------------------------------------")
     return (
       <div className={styles.chart} style={{ height }}>
         <div>

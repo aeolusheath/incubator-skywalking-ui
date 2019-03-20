@@ -97,6 +97,7 @@ query TopologyClientMetric($duration: Duration!, $idsC: [ID!]!) {
 }
 `
 
+// old response metric
 const speedMetricQuery = `
 query SpeedMetric($duration: Duration!, $idsP: [ID!]!) {
   fastRequest: getValues(metric: {
@@ -147,6 +148,95 @@ query SpeedMetric($duration: Duration!, $idsP: [ID!]!) {
 }
 `
 
+const responseValueMetricQuery = `
+query responseMetric($duration: Duration!, $idsP: [ID!]!) {
+  s1: getValues(metric: {
+    name: "service_response_s1_summary",
+    ids: $idsP
+    }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  s3: getValues(metric: {
+    name: "service_response_s3_summary",
+    ids: $idsP
+    }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  s5: getValues(metric: {
+    name: "service_response_s5_summary",
+    ids: $idsP
+    }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  slow: getValues(metric: {
+    name: "service_response_slow_summary",
+    ids: $idsP
+    }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+  error: getValues(metric: {
+    name: "service_response_error_summary",
+    ids: $idsP
+    }, duration: $duration) {
+    values {
+      id
+      value
+    }
+  }
+}
+
+`
+
+const responseLinearMetricQuery =`
+query responseSecondMetric($duration: Duration!, $id: ID!)
+{
+  s1: getLinearIntValues(duration: $duration, metric: {name: "service_response_s1_summary", id: $id}) {
+    values {
+      id
+      value
+    }
+  }
+  s3: getLinearIntValues(duration: $duration, metric: {name: "service_response_s3_summary", id: $id}) {
+    values {
+      id
+      value
+    }
+  }
+  s5: getLinearIntValues(duration: $duration, metric: {name: "service_response_s5_summary", id: $id}) {
+    values {
+      id
+      value
+    }
+  }
+  slow: getLinearIntValues(duration: $duration, metric: {name: "service_response_slow_summary", id: $id}) {
+    values {
+      id
+      value
+    }
+  }
+  error: getLinearIntValues(duration: $duration, metric: {name: "service_response_error_summary", id: 2}) {
+    values {
+      id
+      value
+    }
+  }
+}
+
+`
+
+
 
 export default base({
   namespace: 'topology',
@@ -169,6 +259,40 @@ export default base({
         values: [],
       },
       latency: {
+        values: [],
+      },
+    },
+    responseValueMetric: {
+      error: {
+        values: [],
+      },
+      s1: {
+        values: [],
+      },
+      s3: {
+        values: [],
+      },
+      s5: {
+        values: [],
+      },
+      slow: {
+        values: [],
+      },
+    },
+    responseLinearMetric: {
+      error: {
+        values: [],
+      },
+      s1: {
+        values: [],
+      },
+      s3: {
+        values: [],
+      },
+      s5: {
+        values: [],
+      },
+      slow: {
         values: [],
       },
     },
@@ -196,21 +320,26 @@ export default base({
     }
   `,
   effects: {
-    *fetchRequestStatistic({ payload }, { call, put }) {
-      console.log(payload, "payload----->>>>")
+    *fetchResponseValuesMetric({ payload }, { call, put }) {
       const { idsP, duration } = payload.variables
-      console.log(idsP, duration, "abcdefgggg-------------------->>>>")
-      const data = yield call(exec, { query: speedMetricQuery, variables: { idsP, duration } })
-      console.log(data, "what is data-----kkkkkkkkkkkkkkkkkkkkkkkkkkk------------------------------")
+      const { data = {} } = yield call(exec, { query: responseValueMetricQuery, variables: { idsP, duration } })
+      yield put({
+        type: 'saveData',
+        payload: {
+          responseValueMetric: data,
+        },
+      });
 
-      // const { idsS, duration } = payload.variables
-
-      // if (idsS && idsS.length > 0) {
-      //   const aaa = yield call(exec, { query: serverMetricQuery, variables: { idsS, duration } });
-      //   console.log(aaa, "探清水河")
-      //   // metrics = { ...metrics, ...sData };
-      // }
-
+    },
+    *fetchResponseLinearMetric({ payload }, { call, put }) {
+      const { id, duration } = payload.variables
+      const { data = {} } = yield call(exec, { query: responseLinearMetricQuery, variables: { id, duration } })
+      yield put({
+        type: 'saveData',
+        payload: {
+          responseLinearMetric: data,
+        },
+      })
     },
     *fetchMetrics({ payload }, { call, put }) {
       const { ids, idsS, idsC, duration } = payload.variables;

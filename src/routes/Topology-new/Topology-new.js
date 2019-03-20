@@ -18,7 +18,7 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Icon, Radio, Avatar, Select, Input, Popover, Tag } from 'antd';
+import { Row, Col, Card, Icon, Radio, Avatar, Select, Input, Popover, Tag, Form } from 'antd';
 import {
   G2,
   Chart,
@@ -35,6 +35,7 @@ import {
   Util,
 } from "bizcharts";
 import DataSet from "@antv/data-set";
+import { relative } from 'upath';
 import { ChartCard, Scatter } from '../../components/Charts';
 import { AppTopology } from '../../components/Topology';
 import { Panel } from '../../components/Page';
@@ -43,6 +44,8 @@ import DescriptionList from '../../components/DescriptionList';
 import { redirect } from '../../utils/utils';
 import { generateDuration } from '../../utils/time';
 // import { redirect } from '../../utils/utils';
+import styles from './TopologyNew.less';
+
 
 
 
@@ -82,20 +85,42 @@ const layouts = [
 ];
 
 const layoutButtonStyle = { height: '90%', verticalAlign: 'middle', paddingBottom: 2 };
-
+const { Item: FormItem } = Form;
 @connect(state => ({
   topology: state.topology,
   duration: state.global.duration,
   globalVariables: state.global.globalVariables,
   dashboard: state.dashboard,
+  service: state.service, // service 列表
 }))
+
+
+@Form.create({
+  mapPropsToFields(props) {
+    const { variables: { values, labels } } = props.service;
+    return {
+      serviceId: Form.createFormField({
+        value: { key: values.serviceId ? values.serviceId : '', label: labels.serviceId ? labels.serviceId : '' },
+      }),
+    };
+  },
+})
+
 export default class Topology extends PureComponent {
   static defaultProps = {
     graphHeight: 600,
   };
 
   componentWillMount() {
-    // this.handleRequestStatistics()
+  }
+
+  // 获取服务列表
+  componentDidMount() {
+    const {...propsData} = this.props;
+    propsData.dispatch({
+      type: 'service/initOptions',
+      payload: { variables: propsData.globalVariables },
+    });
   }
 
   findValue = (id, values) => {
@@ -109,6 +134,8 @@ export default class Topology extends PureComponent {
   // 要将dashboard的表格数据获取进来
   // 所以在这个handleChange方法里面需要去获取dashboard的热力图数据
   handleChange = (variables) => {
+    console.log(variables, "poooooooooooooo in topology new")
+    // return
     const { dispatch } = this.props;
     dispatch({
       type: 'topology/fetchData',
@@ -119,20 +146,50 @@ export default class Topology extends PureComponent {
       type: 'dashboard/fetchData',
       payload: { variables },
     });
+    // TODO 要在panel里面传入variable变量，这个变量是来监听service Id的 [variable的值是 render里面的values]
+    // 这里要根据serviceId 去获取service相关的值。比如我们要去获取表格数据 需要以来于serviceId
+    this.retrieveResponseValues([variables.serviceId])
+    this.retrieveResponseLinearValues(variables.serviceId)
   }
 
-  handleRequestStatistics = (idsP) => {
-    const { dispatch,  globalVariables: { duration } } = this.props
-    console.log("handleRequestStatistics", "handleRequestStatistics")
+  retrieveResponseValues = (idsP) => {
+    const { dispatch, globalVariables: { duration } } = this.props
+    console.log("多罗罗")
     dispatch({
-      type: 'topology/fetchRequestStatistic',
+      type: 'topology/fetchResponseValuesMetric',
       payload: {
         variables: {
-          idsP: ["1"],
+          idsP,
           duration,
         },
       },
     })
+  }
+
+  retrieveResponseLinearValues = (id) => {
+    const { dispatch, globalVariables: { duration } } = this.props
+    console.log("约定的梦幻岛")
+    dispatch({
+      type: 'topology/fetchResponseLinearMetric',
+      payload: {
+        variables: {
+          id,
+          duration,
+        },
+      },
+    })
+  }
+
+  handleSelect = (selected) => {
+    console.log(selected, "选中事件，加载的时候触发了没有------>>>>>>>>>")
+    const {...propsData} = this.props;
+    propsData.dispatch({
+      type: 'service/saveVariables',
+      payload: {
+        values: { serviceId: selected.key },
+        labels: { serviceId: selected.label },
+      },
+    });
   }
 
   handleLayoutChange = ({ target: { value } }) => {
@@ -144,9 +201,7 @@ export default class Topology extends PureComponent {
   }
 
   handleLoadMetrics = (ids, idsS, idsC) => {
-    // console.log(ids, idsS, idsC, "三组ID是什么？？？？？")
     const { dispatch, globalVariables: { duration } } = this.props;
-    this.handleRequestStatistics(idsS)
     dispatch({
       type: 'topology/fetchMetrics',
       payload: { variables: {
@@ -235,41 +290,97 @@ export default class Topology extends PureComponent {
     return result;
   }
 
-  render() {
+  renderSecondeChart() {
     const {...propsData} = this.props;
-    const { data, variables: { appRegExps, appFilters = [], latencyRange } } = propsData.topology;
-    const { metrics, layout = 0 } = data;
-    const { getGlobalTopology: topologData } = data;
-    // console.log(data.topologData, "what the dasboard object data")
-    const { dashboard, duration } = this.props
-    const dashboardData = dashboard.data
-    const secondData = [
+    const { data: { responseValueMetric } } = propsData.topology;
+    const getValue = (key) => {
+      return responseValueMetric[key].values.length > 0 ? responseValueMetric[key].values[0].value : 0
+    }
+    const chartData = [
       {
-        year: "1s",
-        sales: 38,
+        timeConsume: "1s",
+        count: getValue("s1"),
       },
       {
-        year: "3s",
-        sales: 52,
+        timeConsume: "3s",
+        count: getValue("s3"),
       },
       {
-        year: "5s",
-        sales: 4,
+        timeConsume: "5s",
+        count: getValue("s5"),
       },
       {
-        year: "Slow",
-        sales: 2,
+        timeConsume: "slow",
+        count: getValue("slow"),
       },
       {
-        year: "Error",
-        sales: 10,
+        timeConsume: "error",
+        count: getValue("error"),
       },
-    ];
-    const secondCols = {
-      sales: {
-        tickInterval: 20,
+    ]
+
+    const cols = {
+      count: {
+        tickInterval: 3000,
       },
     };
+    return (
+      <div style={{
+              border: "1px solid #e8e8e8",
+              backgroundColor: "#fff",
+              marginTop: "8px",
+              paddingTop: "26px",
+              position: "relative",
+              height: "212px",
+            }}
+      >
+        <div style={{
+          position: "absolute",
+          left: "10px",
+          top: "7px",
+          fontSize: "13px",
+        }}
+        > Response Summary
+        </div>
+        <Chart
+          title="Response Time"
+          padding={[ 20, 25, 50, 60]}
+          height={200}
+          data={chartData}
+          scale={cols}
+          forceFit
+        >
+          <Axis name="timeConsume" />
+          <Axis name="count" />
+          {/* <Tooltip
+            crosshairs={{
+                    type: "y",
+                  }}
+          /> */}
+          <Tooltip />
+          <Geom
+            size="65"
+            type="interval"
+            color={['timeConsume', ['#D5ECD5', '#D5ECD5', '#D5ECD5', '#F98285', '#F98285']]}
+            position="timeConsume*count"
+          />
+        </Chart>
+      </div>
+    )
+  }
+
+  render() {
+    // console.log(this.props, "topology - new")
+    const {...propsData} = this.props;
+    const { data, variables: { appRegExps, appFilters = [], latencyRange } } = propsData.topology;
+    const { variables: { values, options, labels } } = propsData.service;
+    // console.log(values, "valuessss-----")
+    const { metrics, layout = 0 } = data;
+    const { getGlobalTopology: topologData } = data;
+    console.log(data, "what the topology object data")
+    const { dashboard, duration } = this.props
+    const dashboardData = dashboard.data
+
     const thirdData = [
       {
         year: "1986",
@@ -278,23 +389,23 @@ export default class Topology extends PureComponent {
       },
       {
         year: "1987",
-        ACME: 134,
-        Compitor: 54,
+        ACME: 162,
+        Compitor: 42,
       },
       {
         year: "1988",
-        ACME: 116,
-        Compitor: 26,
+        ACME: 162,
+        Compitor: 42,
       },
       {
         year: "1989",
-        ACME: 122,
-        Compitor: 32,
+        ACME: 162,
+        Compitor: 42,
       },
       {
         year: "1990",
-        ACME: 178,
-        Compitor: 68,
+        ACME: 162,
+        Compitor: 42,
       },
       {
         year: "1991",
@@ -363,17 +474,42 @@ export default class Topology extends PureComponent {
 
     // console.log(dashboardData, "abcdefg")
     // console.log(duration, "duration----->>>>>>")
-    const content = (
-      <div>
-        <p><Tag color="#40a9ff">Less than {latencyRange[0]} ms </Tag></p>
-        <p><Tag color="#d4b106">Between {latencyRange[0]} ms and {latencyRange[1]} ms</Tag></p>
-        <p><Tag color="#cf1322">More than {latencyRange[1]} ms</Tag></p>
-      </div>
-    );
+    // const content = (
+    //   <div>
+    //     <p><Tag color="#40a9ff">Less than {latencyRange[0]} ms </Tag></p>
+    //     <p><Tag color="#d4b106">Between {latencyRange[0]} ms and {latencyRange[1]} ms</Tag></p>
+    //     <p><Tag color="#cf1322">More than {latencyRange[1]} ms</Tag></p>
+    //   </div>
+    // );
+    const { getFieldDecorator } = propsData.form;
     return (
-      <Panel globalVariables={propsData.globalVariables} onChange={this.handleChange}>
+      <Panel globalVariables={propsData.globalVariables} variables={values} onChange={this.handleChange}>
         <Row gutter={8}>
           <Col {...{ ...colResponsiveProps, xl: 14, lg: 14 }}>
+            <div className={styles.serviceSelectInTopo}>
+              <Form layout="inline">
+                <FormItem>
+                  {getFieldDecorator('serviceId')(
+                    <Select
+                      showSearch
+                      optionFilterProp="children"
+                      style={{ width: 200 }}
+                      placeholder="Select a service"
+                      labelInValue
+                      onSelect={this.handleSelect.bind(this)}
+                    >
+                      {options.serviceId && options.serviceId.map((service) => {
+                          const key = service.key || "unique"
+                          return (<Option key={key} value={service.key}> {service.label}</Option>)
+                        })
+                      }
+
+                    </Select>
+            )}
+                </FormItem>
+              </Form>
+
+            </div>
             <ChartCard
               title="Topology Map"
               avatar={<Avatar icon="fork" style={{ color: '#1890ff', backgroundColor: '#ffffff' }} />}
@@ -383,7 +519,7 @@ export default class Topology extends PureComponent {
                     <Radio.Button value={i} key={_.name}>
                       <img src={_.icon} alt={_.name} style={layoutButtonStyle} />
                     </Radio.Button>
-))}
+                  ))}
                 </Radio.Group>
               )}
             >
@@ -429,37 +565,7 @@ export default class Topology extends PureComponent {
               />
             </ChartCard>
 
-
-
-            <div style={{
-              border: "1px solid #e8e8e8",
-              backgroundColor: "#fff",
-              marginTop: "8px",
-              paddingTop: "15px",
-              height: "212px",
-            }}
-            >
-              <Chart
-                padding={[ 20, 25, 50, 60]}
-                height={200}
-                data={secondData}
-                scale={secondCols}
-                forceFit
-              >
-                <Axis name="year" />
-                <Axis name="sales" />
-                <Tooltip
-                  crosshairs={{
-                    type: "y",
-                  }}
-                />
-                <Geom
-                  type="interval"
-                  color={['year', ['#D5ECD5', '#D5ECD5', '#D5ECD5', '#F98285', '#F98285']]}
-                  position="year*sales"
-                />
-              </Chart>
-            </div>
+            {this.renderSecondeChart()}
 
             {thirdNode}
 

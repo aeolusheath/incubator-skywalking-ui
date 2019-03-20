@@ -235,8 +235,6 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
       },
       *fetchData({ payload }, { call, put }) {
         const { variables, reducer = undefined } = payload;
-        // console.log(reducer, "reducer----->>>>")
-        // console.log(payload, reducer, put, "in models.js")
         const response = yield call(exec, { variables, query: dataQuery });
         if (!response.data) {
           return;
