@@ -134,8 +134,6 @@ export default class Topology extends PureComponent {
   // 要将dashboard的表格数据获取进来
   // 所以在这个handleChange方法里面需要去获取dashboard的热力图数据
   handleChange = (variables) => {
-    console.log(variables, "poooooooooooooo in topology new")
-    // return
     const { dispatch } = this.props;
     dispatch({
       type: 'topology/fetchData',
@@ -154,7 +152,6 @@ export default class Topology extends PureComponent {
 
   retrieveResponseValues = (idsP) => {
     const { dispatch, globalVariables: { duration } } = this.props
-    console.log("多罗罗")
     dispatch({
       type: 'topology/fetchResponseValuesMetric',
       payload: {
@@ -168,7 +165,6 @@ export default class Topology extends PureComponent {
 
   retrieveResponseLinearValues = (id) => {
     const { dispatch, globalVariables: { duration } } = this.props
-    console.log("约定的梦幻岛")
     dispatch({
       type: 'topology/fetchResponseLinearMetric',
       payload: {
@@ -181,7 +177,6 @@ export default class Topology extends PureComponent {
   }
 
   handleSelect = (selected) => {
-    console.log(selected, "选中事件，加载的时候触发了没有------>>>>>>>>>")
     const {...propsData} = this.props;
     propsData.dispatch({
       type: 'service/saveVariables',

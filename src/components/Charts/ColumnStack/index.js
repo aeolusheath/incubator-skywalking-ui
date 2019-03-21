@@ -34,12 +34,76 @@ export default class Panel extends Component {
     }
 
     this.myChart = echarts.init(document.getElementById('StackColumn'));
+    const keyColor = {
+      '1s': '#D5ECD5',
+      '3s': '#D5ECD5',
+      '5s': '#D5ECD5',
+      'slow': '#F98285',
+      'error': '#F98285',
+    }
     const option = {
       tooltip : {
+          backgroundColor: 'white',
           trigger: 'axis',
           axisPointer : {            // 坐标轴指示器，坐标轴触发有效
               type : 'line',        // 默认为直线，可选为：'line' | 'shadow'
           },
+          textStyle: {
+            color: 'rgba(0, 0, 0, 0.65)',
+            fontSize: 11,
+            fontWeight: 'normal',
+            lineHeight: 60,
+            paddingTop: 5,
+          },
+          extraCssText: `
+            width: 105px;
+            box-shadow: 0 0 3px .4px rgba(0, 0, 0, 0.2);
+            padding-bottom: 10px;
+            padding-top: 10px;
+            padding-left: 12px;
+          `,
+          formatter (params) {
+              const { axisValue } = params[0]
+              const keys = ['1s', '3s', '5s', 'slow', 'error']
+              const mapObj = {}
+              const getFormatData = (key, str, value) => {
+                if(str.includes(key)) {
+                  mapObj[key] = value
+                }
+              }
+              params.reverse().forEach(item => {
+                const  { seriesId } = item
+                keys.forEach(key => {
+                  getFormatData(key, seriesId, item.value)
+                })
+              })
+              let htmlTemplate = ''
+              for(const key in mapObj) {
+                if(Object.prototype.hasOwnProperty.call(mapObj, key)) {
+                  htmlTemplate += `
+                    <div style="
+                        margin-top: 4px;
+                      ">
+                      <span
+                        style="
+                          display: inline-block;
+                          height: 5px;
+                          width: 5px;
+                          border-radius: 50%;
+                          background-color: ${keyColor[key]};
+                          margin-right: 5px;
+                      ">  </span>
+                      <span> ${key}:  </span>
+                      <span> &nbsp; ${mapObj[key]} </span>
+                    </div>`
+                }
+              }
+              return`
+               ${axisValue}<br>
+               ${htmlTemplate}
+              `
+          },
+
       },
       legend: {
           // data: ['直接访问', '邮件营销','联盟广告','视频广告','搜索引擎']
