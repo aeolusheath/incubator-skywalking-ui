@@ -30,6 +30,7 @@ import Sankey from './Sankey';
 import HeatMap from './HeatMap';
 import Scatter from './Scatter'
 import EndpointDeps from './EndpointDeps';
+import ColumnStack from "./ColumnStack"
 
 const yuan = val => `&yen; ${numeral(val).format('0,0')}`;
 
@@ -48,6 +49,7 @@ const Charts = {
   HeatMap,
   EndpointDeps,
   Scatter,
+  ColumnStack,
 };
 
 export {
@@ -66,4 +68,5 @@ export {
   HeatMap,
   Scatter,
   EndpointDeps,
+  ColumnStack,
 };

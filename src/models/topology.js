@@ -280,21 +280,39 @@ export default base({
       },
     },
     responseLinearMetric: {
-      error: {
-        values: [],
+      xAxisData: [],
+      yAxisData: {
+        error: {
+          values: [],
+        },
+        s1: {
+          values: [],
+        },
+        s3: {
+          values: [],
+        },
+        s5: {
+          values: [],
+        },
+        slow: {
+          values: [],
+        },
       },
-      s1: {
-        values: [],
-      },
-      s3: {
-        values: [],
-      },
-      s5: {
-        values: [],
-      },
-      slow: {
-        values: [],
-      },
+      // error: {
+      //   values: [],
+      // },
+      // s1: {
+      //   values: [],
+      // },
+      // s3: {
+      //   values: [],
+      // },
+      // s5: {
+      //   values: [],
+      // },
+      // slow: {
+      //   values: [],
+      // },
     },
   },
   varState: {
@@ -334,10 +352,29 @@ export default base({
     *fetchResponseLinearMetric({ payload }, { call, put }) {
       const { id, duration } = payload.variables
       const { data = {} } = yield call(exec, { query: responseLinearMetricQuery, variables: { id, duration } })
+      let xAxisData = []
+      const yAxisData = {}
+      const formatFunc = (resData) => {
+        const summaryTypes = Object.keys(resData)
+        const firstSummaryType = summaryTypes[0] // error s1 s3 s5 slow
+        xAxisData = resData[firstSummaryType].values.map(item => {
+          const{ id: key } = item
+          const index = id.indexOf("_")
+          return (index !== -1) ? key.subStr(0, index) : key
+        })
+        for (let i = 0; i < summaryTypes.length; i+=1) {
+          const type = summaryTypes[i]
+          yAxisData[type] = data[type].values.map(item => item.value)
+        }
+      }
+      formatFunc(data)
       yield put({
         type: 'saveData',
         payload: {
-          responseLinearMetric: data,
+          responseLinearMetric: {
+            xAxisData,
+            yAxisData,
+          },
         },
       })
     },

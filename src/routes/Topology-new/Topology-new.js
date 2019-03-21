@@ -36,7 +36,7 @@ import {
 } from "bizcharts";
 import DataSet from "@antv/data-set";
 import { relative } from 'upath';
-import { ChartCard, Scatter } from '../../components/Charts';
+import { ChartCard, Scatter, ColumnStack } from '../../components/Charts';
 import { AppTopology } from '../../components/Topology';
 import { Panel } from '../../components/Page';
 import ApplicationLitePanel from '../../components/ApplicationLitePanel';
@@ -376,8 +376,8 @@ export default class Topology extends PureComponent {
     const { variables: { values, options, labels } } = propsData.service;
     // console.log(values, "valuessss-----")
     const { metrics, layout = 0 } = data;
-    const { getGlobalTopology: topologData } = data;
-    console.log(data, "what the topology object data")
+    const { getGlobalTopology: topologData, responseLinearMetric } = data;
+    // console.log(data, "what the topology object data")
     const { dashboard, duration } = this.props
     const dashboardData = dashboard.data
 
@@ -567,7 +567,8 @@ export default class Topology extends PureComponent {
 
             {this.renderSecondeChart()}
 
-            {thirdNode}
+            {/* {thirdNode} */}
+            <ColumnStack dataSource={responseLinearMetric} />
 
             {/* {data.appInfo ? (
               <Card
