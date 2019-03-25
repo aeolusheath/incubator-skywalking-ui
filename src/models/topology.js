@@ -351,7 +351,12 @@ export default base({
     },
     *fetchResponseLinearMetric({ payload }, { call, put }) {
       const { id, duration } = payload.variables
-      const { data = {} } = yield call(exec, { query: responseLinearMetricQuery, variables: { id, duration } })
+      const duration1 = {
+        end: "2019-03-22 1420",
+        start: "2019-03-22 1405",
+        step: "MINUTE",
+      }
+      const { data = {} } = yield call(exec, { query: responseLinearMetricQuery, variables: { id, duration: duration1 } })
       let xAxisData = []
       const yAxisData = {}
       const formatFunc = (resData) => {

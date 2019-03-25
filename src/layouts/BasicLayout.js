@@ -128,7 +128,8 @@ class BasicLayout extends React.PureComponent {
       urlParams.searchParams.delete('redirect');
       window.history.replaceState(null, 'redirect', urlParams.href);
     } else {
-      return '/monitor/dashboard';
+      // return '/monitor/dashboard';
+      return '/monitor/topology';
     }
     return redirect;
   }

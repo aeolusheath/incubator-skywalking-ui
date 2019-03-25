@@ -365,110 +365,104 @@ export default class Topology extends PureComponent {
   }
 
   render() {
-    // console.log(this.props, "topology - new")
     const {...propsData} = this.props;
-    const { data, variables: { appRegExps, appFilters = [], latencyRange } } = propsData.topology;
+    const { history, data, variables: { appRegExps, appFilters = [], latencyRange } } = propsData.topology;
     const { variables: { values, options, labels } } = propsData.service;
-    // console.log(values, "valuessss-----")
     const { metrics, layout = 0 } = data;
     const { getGlobalTopology: topologData, responseLinearMetric } = data;
-    // console.log(data, "what the topology object data")
     const { dashboard, duration } = this.props
     const dashboardData = dashboard.data
+    // const thirdData = [
+    //   {
+    //     year: "1986",
+    //     ACME: 162,
+    //     Compitor: 42,
+    //   },
+    //   {
+    //     year: "1987",
+    //     ACME: 162,
+    //     Compitor: 42,
+    //   },
+    //   {
+    //     year: "1988",
+    //     ACME: 162,
+    //     Compitor: 42,
+    //   },
+    //   {
+    //     year: "1989",
+    //     ACME: 162,
+    //     Compitor: 42,
+    //   },
+    //   {
+    //     year: "1990",
+    //     ACME: 162,
+    //     Compitor: 42,
+    //   },
+    //   {
+    //     year: "1991",
+    //     ACME: 144,
+    //     Compitor: 54,
+    //   },
+    //   {
+    //     year: "1992",
+    //     ACME: 125,
+    //     Compitor: 35,
+    //   },
+    // ];
+    // const thirdDv = new DataSet.View().source(thirdData);
+    // thirdDv.transform({
+    //   type: "fold",
+    //   fields: ["ACME", "Compitor"],
+    //   key: "type",
+    //   value: "value",
+    // });
+    // const thirdScale = {
+    //   value: {
+    //     alias: "The Share Price in Dollars",
+    //     formatter(val) {
+    //       return `$${  val}`;
+    //     },
+    //   },
+    //   year: {
+    //     range: [0, 1],
+    //   },
+    // };
+    // const thirdNode = (
+    //   <div
+    //     style={{
+    //           border: "1px solid #e8e8e8",
+    //           backgroundColor: "#fff",
+    //           marginTop: "7px",
+    //           height: "213px",
+    //         }}
+    //   >
+    //     <Chart
+    //       height={200}
+    //       data={thirdDv}
+    //       scale={thirdScale}
+    //       forceFit
+    //       padding={[ 20, 30, 20, 50]}
 
-    const thirdData = [
-      {
-        year: "1986",
-        ACME: 162,
-        Compitor: 42,
-      },
-      {
-        year: "1987",
-        ACME: 162,
-        Compitor: 42,
-      },
-      {
-        year: "1988",
-        ACME: 162,
-        Compitor: 42,
-      },
-      {
-        year: "1989",
-        ACME: 162,
-        Compitor: 42,
-      },
-      {
-        year: "1990",
-        ACME: 162,
-        Compitor: 42,
-      },
-      {
-        year: "1991",
-        ACME: 144,
-        Compitor: 54,
-      },
-      {
-        year: "1992",
-        ACME: 125,
-        Compitor: 35,
-      },
-    ];
-    const thirdDv = new DataSet.View().source(thirdData);
-    thirdDv.transform({
-      type: "fold",
-      fields: ["ACME", "Compitor"],
-      key: "type",
-      value: "value",
-    });
-    const thirdScale = {
-      value: {
-        alias: "The Share Price in Dollars",
-        formatter(val) {
-          return `$${  val}`;
-        },
-      },
-      year: {
-        range: [0, 1],
-      },
-    };
-    const thirdNode = (
-      <div
-        style={{
-              border: "1px solid #e8e8e8",
-              backgroundColor: "#fff",
-              marginTop: "7px",
-              height: "213px",
-            }}
-      >
-        <Chart
-          height={200}
-          data={thirdDv}
-          scale={thirdScale}
-          forceFit
-          padding={[ 20, 30, 20, 50]}
-
-        >
-          <Tooltip crosshairs />
-          <Axis />
-          <Geom type="area" position="year*value" color="type" shape="smooth" />
-          <Geom
-            type="line"
-            position="year*value"
-            color="type"
-            shape="smooth"
-            size={2}
-          />
-        </Chart>
-      </div>
+    //     >
+    //       <Tooltip crosshairs />
+    //       <Axis />
+    //       <Geom type="area" position="year*value" color="type" shape="smooth" />
+    //       <Geom
+    //         type="line"
+    //         position="year*value"
+    //         color="type"
+    //         shape="smooth"
+    //         size={2}
+    //       />
+    //     </Chart>
+    //   </div>
 
 
-    );
-
+    // );
 
 
 
-    // console.log(dashboardData, "abcdefg")
-    // console.log(duration, "duration----->>>>>>")
+
     // const content = (
     //   <div>
     //     <p><Tag color="#40a9ff">Less than {latencyRange[0]} ms </Tag></p>
@@ -543,6 +537,8 @@ export default class Topology extends PureComponent {
               }}
             >
               <Scatter
+                serviceId={values.serviceId}
+                history={propsData.history}
                 data={dashboardData.getThermodynamic}
                 duration={duration}
                 height={200}

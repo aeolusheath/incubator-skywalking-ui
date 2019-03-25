@@ -21,6 +21,9 @@ import Brush from "@antv/g2-brush";
 // import Brush from "@antv/g2-brush";
 import autoHeight from '../autoHeight';
 import styles from '../index.less';
+import { redirect } from '../../../utils/utils';
+import { generateDuration } from '../../../utils/time';
+
 
 const yTickOffset = 20;
 let chart
@@ -28,46 +31,34 @@ let brush
 @autoHeight()
 class HeatMap extends Component {
   componentDidMount() {
-      if(chart) {
-        // console.log("222222222")
-        if (brush) {
-          brush.destroy()
-        }
-        brush = new Brush({
-          canvas: chart.get("canvas"),
-          chart,
-          onBrushstart(ev) {
-            console.log("what is oioioioi", ev)
-          },
-          onBrushend(ev, p2, p3, p4, p5) {
-            console.log("brush end", ev, p2, p3, p4, p5)
-            console.log(this._getSelected(), "hello its me")
-            // const duration =
-          },
-        })
-      }
+    this.bindBrush("componentDidMount")
+  }
+
+  shouldComponentUpdate(nextProps) {
+    // const {...propsData} = this.props;
+    // const { globalVariables, variables, onChange } = nextProps;
+    // if (!this.isRender(nextProps)) {
+    //   return false;
+    // }
+    // if (globalVariables !== propsData.globalVariables || variables !== propsData.variables) {
+    //   onChange({ ...globalVariables, ...variables });
+    //   return false;
+    // }
+    // return true;
+
+    const { ...propsData } = this.props
+    const { data, duration } = nextProps
+    if (data !== propsData.data || duration !== propsData.duration) {
+      return true
+    }
+    return false
   }
 
   componentDidUpdate() {
-      if(chart) {
-        // console.log("222222222")
-        if (brush) {
-          brush.destroy()
-        }
-        brush = new Brush({
-          canvas: chart.get("canvas"),
-          chart,
-          onBrushstart(ev) {
-            console.log("what is oioioioi", ev)
-          },
-          onBrushend(ev, p2, p3, p4, p5) {
-            console.log("brush end", ev, p2, p3, p4, p5)
-            console.log(this._getSelected(), "hello its me")
-          },
-        })
-      }
-
+      this.bindBrush("componentDidUpdate")
   }
+
+
 
   getScaleMap = maxResponseTimeOffset => {
     const scaleMap = [];
@@ -114,6 +105,53 @@ class HeatMap extends Component {
     }
     propsData.onClick({ start: dtStart, end: dtEnd }, { min, max });
   };
+
+  redirectToTracePage (start, end) {
+    const { history, serviceId } = this.props;
+    redirect(history, '/trace', { values: { duration: generateDuration({
+        from() {
+          return start;
+        },
+        to() {
+          return end;
+        },
+      }),
+      serviceId,
+        } })
+
+  }
+
+  bindBrush () {
+    const that = this
+    if(chart) {
+      if (brush) {
+        brush.destroy()
+      }
+      brush = new Brush({
+        canvas: chart.get("canvas"),
+        chart,
+        onBrushend(ev, p2, p3, p4, p5) {
+          const { data } = this._getSelected()
+          const xAxisArr = []
+          data.forEach(item => {
+            xAxisArr.push(item.datetime)
+          })
+          xAxisArr.sort((a, b) => a - b)
+          // 获取到xAxisArr的最大值 最小值
+          // console.log(xAxisArr, "xAxisArr")
+          if(xAxisArr.length !== 0) {
+            // 将数据存储到store里面
+            const { duration: { raw: { range: timeRange } } } = that.props
+            const endIndex = xAxisArr[xAxisArr.length - 1]
+            const startIndex = xAxisArr[0]
+            const start = timeRange[startIndex]
+            const end = timeRange[endIndex]
+            that.redirectToTracePage(start, end)
+          }
+        },
+      })
+    }
+  }
 
   render() {
     const {
@@ -187,7 +225,6 @@ class HeatMap extends Component {
         tickCount: 5,
       },
     };
-    // console.log(cols, "mergeSource--------------------------------------------------")
     return (
       <div className={styles.chart} style={{ height }}>
         <div>
@@ -220,7 +257,11 @@ class HeatMap extends Component {
             forceFit
             height={height * 1.4}
             // padding={{left: 50}}
-            onPlotClick={() =>{}}
+            // onPlotClick={() =>{}}
+            onPlotClick={(param) => {
+              // console.log("param", param)
+              }
+            }
           >
             <Axis
               name="datetime"
