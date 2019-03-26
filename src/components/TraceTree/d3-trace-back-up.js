@@ -104,7 +104,7 @@ export default class TraceMap {
       .scaleLinear()
       .domain([0, this.max])
       .range([0, this.width - 10]);
-
+      
     this.xAxis = d3.axisTop(this.xScale).tickFormat(d => {
       if (d === 0) return 0;
       if (d >= 1000) return d / 1000 + 's';
@@ -169,7 +169,7 @@ export default class TraceMap {
       .attr('dx', 5)
       .attr('dy', 11)
       .text(d=> {
-        return d.data.dur ? (d.data.dur + ' ms') : "--"
+        return d.data.dur + ' ms'
       })
       .attr('fill', '#fff');
     const nodeSelfChild = nodeEnter
@@ -188,8 +188,8 @@ export default class TraceMap {
       .append('text')
       .attr('dx', 5)
       .attr('dy', 11)
-      .text(d=> `children: ${d.data.childrenLength || '--'}`)
-      .attr('fill', '#fff')
+      .text(d=> `children: ${d.data.childrenLength}`)
+      .attr('fill', '#fff') 
     nodeEnter
       .append('rect')
       .attr('class', 'block')
@@ -222,12 +222,7 @@ export default class TraceMap {
       .attr('text-anchor', 'start')
       .attr('fill', d => this.type[d.data.layer])
       .attr('stroke', d => this.type[d.data.layer])
-      .text(d => {
-        if(d.data.type == 'Local' && d.data.layer == 'Unknown'){
-          return 'Local';
-        }
-        return d.data.layer;
-      });
+      .text(d => d.data.layer);
 
     nodeEnter
       .append('text')
@@ -441,7 +436,7 @@ export default class TraceMap {
     d3.selectAll('.time-inner').style('opacity', 0);
     d3.selectAll('.time-inner-duration').style('opacity', 1);
     d3.selectAll('.trace-tree-node-selfchild').style('opacity', 0);
-    d3.selectAll('.trace-tree-node-selfdur').style('opacity', 1); // undefined 没有找到定义
+    d3.selectAll('.trace-tree-node-selfdur').style('opacity', 1);
     this.nodeUpdate._groups[0].forEach(i => {
       d3.select(i).style('opacity', .2);
       if(i.__data__.data.dur >= this.smin && i.__data__.data.dur <= this.smax){

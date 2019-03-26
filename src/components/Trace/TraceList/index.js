@@ -49,7 +49,14 @@ class TraceList extends PureComponent {
       <div>
         {traceIds.map(id => {
           return (
-            <Button key={id} size="small" onClick={() => onClickTraceTag(id)}>
+            <Button
+              style={{
+                marginRight: '7px',
+              }}
+              key={id}
+              size="small"
+              onClick={() => onClickTraceTag(id)}
+            >
               {id}
             </Button>
           );
