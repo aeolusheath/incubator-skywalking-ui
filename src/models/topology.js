@@ -97,56 +97,6 @@ query TopologyClientMetric($duration: Duration!, $idsC: [ID!]!) {
 }
 `
 
-// old response metric
-const speedMetricQuery = `
-query SpeedMetric($duration: Duration!, $idsP: [ID!]!) {
-  fastRequest: getValues(metric: {
-    name: "one_second_request",
-    ids: $idsP
-  }, duration: $duration) {
-    values {
-      id
-      value
-    }
-  }
-  mediumRequest: getValues(metric: {
-    name: "three_second_request",
-    ids: $idsP
-  }, duration: $duration) {
-    values {
-      id
-      value
-    }
-  }
-  lowRequest: getValues(metric: {
-    name: "five_second_request",
-    ids: $idsP
-  }, duration: $duration) {
-    values {
-      id
-      value
-    }
-  }
-  slowRequest: getValues(metric: {
-    name: "slow_request",
-    ids: $idsP
-  }, duration: $duration) {
-    values {
-      id
-      value
-    }
-  }
-  errorRequest: getValues(metric: {
-    name: "error_request",
-    ids: $idsP
-  }, duration: $duration) {
-    values {
-      id
-      value
-    }
-  }
-}
-`
 
 const responseValueMetricQuery = `
 query responseMetric($duration: Duration!, $idsP: [ID!]!) {
@@ -359,13 +309,23 @@ export default base({
       const { data = {} } = yield call(exec, { query: responseLinearMetricQuery, variables: { id, duration } })
       let xAxisData = []
       const yAxisData = {}
+      const formatDateTime = (datetime) => {
+        //  const year = datetime.substr(0, 4)
+         const year = ''
+         const date = datetime.substr(4, 4)
+         const time = datetime.substr(8, 4)
+
+         const result = `${ year  } ${  date.substr(0, 2)  }-${  date.substr(2, 2)  } ${  time.substr(0, 2)  }:${  time.substr(2, 2)}`
+         return result
+       }
       const formatFunc = (resData) => {
+        // resData.s1.values[0].id = '2019032814444_2'
         const summaryTypes = Object.keys(resData)
         const firstSummaryType = summaryTypes[0] // error s1 s3 s5 slow
         xAxisData = resData[firstSummaryType].values.map(item => {
-          const{ id: key } = item
-          const index = id.indexOf("_")
-          return (index !== -1) ? key.subStr(0, index) : key
+          const { id: key } = item
+          const index = key.indexOf("_")
+          return (index !== -1) ? formatDateTime(key.substr(0, index)) : key
         })
         for (let i = 0; i < summaryTypes.length; i+=1) {
           const type = summaryTypes[i]

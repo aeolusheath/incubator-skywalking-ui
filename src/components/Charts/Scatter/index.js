@@ -30,6 +30,11 @@ let chart
 let brush
 @autoHeight()
 class HeatMap extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
+
   componentDidMount() {
     this.bindBrush("componentDidMount")
   }
@@ -108,7 +113,7 @@ class HeatMap extends Component {
 
   redirectToTracePage (start, end, minDuration, maxDuratoin) {
     const { history, serviceId } = this.props;
-    redirect(history, '/trace', { values: { duration: generateDuration({
+    const postObj = { duration: generateDuration({
         from() {
           return start;
         },
@@ -119,7 +124,14 @@ class HeatMap extends Component {
       serviceId,
       minTraceDuration: minDuration,
       maxTraceDuration: maxDuratoin,
-        } })
+    }
+    if (minDuration === 0) {
+      delete postObj.minTraceDuration
+    }
+    if (maxDuratoin === 0) {
+      delete postObj.maxTraceDuration
+    }
+    redirect(history, '/trace', { values: postObj })
 
   }
 
@@ -143,11 +155,14 @@ class HeatMap extends Component {
           xAxisArr.sort((a, b) => a - b)
           durationList.sort((a, b) => a - b)
           const { data: { responseTimeStep } } = that.props
+          const { responseTimeAxis: yLength } = that.state
           const minDuration = durationList[0] * responseTimeStep * 2
-          const maxDuration = (durationList[durationList.length - 1] + 1) * responseTimeStep * 2
+          let maxDuration = (durationList[durationList.length - 1] + 1) * responseTimeStep * 2
+          if (durationList[durationList.length - 1] === (yLength - 1)) {
+            maxDuration = 0
+          }
           // 获取到xAxisArr的最大值 最小值
           if(xAxisArr.length !== 0) {
-            // 将数据存储到store里面
             const { duration: { raw: { range: timeRange } } } = that.props
             const endIndex = xAxisArr[xAxisArr.length - 1]
             const startIndex = xAxisArr[0]
@@ -232,6 +247,11 @@ class HeatMap extends Component {
         tickCount: 5,
       },
     };
+
+    this.setState({
+      responseTimeAxis: cols.responseTime.values.length,
+    })
+    // this.state.responseTimeAxis = cols.responseTime.values.length
     return (
       <div className={styles.chart} style={{ height }}>
         <div>

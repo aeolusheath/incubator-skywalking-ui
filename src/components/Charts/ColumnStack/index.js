@@ -7,6 +7,7 @@ import  'echarts/lib/chart/bar';
 // 引入提示框和标题组件
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
+import 'echarts/lib/component/legend'
 
 
 
@@ -46,12 +47,13 @@ export default class Panel extends Component {
     }
 
     this.myChart = echarts.init(document.getElementById('StackColumn'));
+    // color={['timeConsume', ['#56B356', '#639AFB', '#D5ECD5', '#F98285', '#F98285']]}
     const keyColor = {
-      '1s': '#D5ECD5',
-      '3s': '#D5ECD5',
-      '5s': '#D5ECD5',
-      'slow': '#F98285',
-      'error': '#F98285',
+      '1s': '#56B356',
+      '3s': '#639AFB',
+      '5s': '#F9D25A',
+      'slow': '#F8A750',
+      'error': '#F7595D',
     }
 
     // mock真实的数据
@@ -120,12 +122,19 @@ export default class Panel extends Component {
 
       },
       legend: {
-          // data: ['直接访问', '邮件营销','联盟广告','视频广告','搜索引擎']
+        data: ['1s', '3s', '5s', 'slow', 'error'],
+        top: -1,
+        icon: 'circle',
+        itemWidth: 8,
+        itemHeight: 8,
+        textStyle: {
+          color: 'rgba(0, 0, 0, 0.65)',
+        },
       },
       grid: {
           left: 15,
           right: 15,
-          top: 25,
+          top: 30,
           bottom: 15,
           // bottom: '3%',
           containLabel: true,
@@ -163,7 +172,8 @@ export default class Panel extends Component {
               },
           },
       },
-      color: ["#D5ECD5", "#D5ECD5", "#D5ECD5", "#F98285", "#F98285"],
+      // color: ["#56B356", "#639AFB", "#D5ECD5", "#F98285", "#F98285"],
+      color: ["#56B356", "#639AFB", "#F9D25A", "#F8A750", "#F7595D"],
       series: [
           {
               name: '1s',
@@ -352,15 +362,31 @@ export default class Panel extends Component {
 
   render() {
     return (
-      <div
-        id="StackColumn"
-        style={{
+      <div style={{
+        position: "relative",
+        width: "100%",
+      }}
+      >
+        <div
+          id="StackColumn"
+          style={{
               border: "1px solid #e8e8e8",
               backgroundColor: "#fff",
               marginTop: "7px",
-              height: "213px",
+              height: "224px",
+              paddingTop: "9px",
+              position: "relatives",
             }}
-      />
+        />
+        <span
+          style={{
+          position: "absolute",
+          left: "15px",
+          top: "4px",
+         }}
+        >load
+        </span>
+      </div>
     )
   }
 

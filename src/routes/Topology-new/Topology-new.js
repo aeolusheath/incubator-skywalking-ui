@@ -357,6 +357,7 @@ export default class Topology extends PureComponent {
             size="65"
             type="interval"
             color={['timeConsume', ['#D5ECD5', '#D5ECD5', '#D5ECD5', '#F98285', '#F98285']]}
+            // color={['timeConsume', ['#56B356', '#639AFB', '#D5ECD5', '#F98285', '#F98285']]}
             position="timeConsume*count"
           />
         </Chart>
