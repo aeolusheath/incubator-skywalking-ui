@@ -19,6 +19,7 @@ import React, { Component } from 'react';
 import { Chart, Axis, Tooltip, Geom } from 'bizcharts';
 import Brush from "@antv/g2-brush";
 // import Brush from "@antv/g2-brush";
+import { merge } from 'rxjs';
 import autoHeight from '../autoHeight';
 import styles from '../index.less';
 import { redirect } from '../../../utils/utils';
@@ -145,7 +146,7 @@ class HeatMap extends Component {
         canvas: chart.get("canvas"),
         chart,
         onBrushend(ev, p2, p3, p4, p5) {
-          const { data } = this._getSelected()
+          const { data } = ev
           const xAxisArr = []
           const durationList = []
           data.forEach(item => {
@@ -203,7 +204,7 @@ class HeatMap extends Component {
         count: item[2],
       });
     }
-    const mergeSource = [];
+    let mergeSource = [];
     let responseTimeAxis = [];
     if (maxResponseTimeOffset > yTickOffset) {
       const scaleMap = this.getScaleMap(maxResponseTimeOffset);
@@ -252,6 +253,7 @@ class HeatMap extends Component {
       responseTimeAxis: cols.responseTime.values.length,
     })
     // this.state.responseTimeAxis = cols.responseTime.values.length
+    mergeSource = mergeSource.filter(item => item.count !== 0)
     return (
       <div className={styles.chart} style={{ height }}>
         <div>
@@ -286,7 +288,7 @@ class HeatMap extends Component {
             // padding={{left: 50}}
             // onPlotClick={() =>{}}
             onPlotClick={(param) => {
-              // console.log("param", param)
+              // console.log("param------->>>>>>>>>abcdefg", param)
               }
             }
           >

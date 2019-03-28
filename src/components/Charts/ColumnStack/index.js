@@ -48,12 +48,13 @@ export default class Panel extends Component {
 
     this.myChart = echarts.init(document.getElementById('StackColumn'));
     // color={['timeConsume', ['#56B356', '#639AFB', '#D5ECD5', '#F98285', '#F98285']]}
+      // color: ["#D5ECD5", "lightskyblue", "#F9D25A", "#f1b26f", "#F98285"],
     const keyColor = {
-      '1s': '#56B356',
-      '3s': '#639AFB',
+      '1s': '#D5ECD5',
+      '3s': 'lightskyblue',
       '5s': '#F9D25A',
-      'slow': '#F8A750',
-      'error': '#F7595D',
+      'slow': '#f1b26f',
+      'error': '#F98285',
     }
 
     // mock真实的数据
@@ -123,7 +124,7 @@ export default class Panel extends Component {
       },
       legend: {
         data: ['1s', '3s', '5s', 'slow', 'error'],
-        top: -1,
+        top: 3,
         icon: 'circle',
         itemWidth: 8,
         itemHeight: 8,
@@ -134,7 +135,7 @@ export default class Panel extends Component {
       grid: {
           left: 15,
           right: 15,
-          top: 30,
+          top: 40,
           bottom: 15,
           // bottom: '3%',
           containLabel: true,
@@ -172,8 +173,9 @@ export default class Panel extends Component {
               },
           },
       },
-      // color: ["#56B356", "#639AFB", "#D5ECD5", "#F98285", "#F98285"],
-      color: ["#56B356", "#639AFB", "#F9D25A", "#F8A750", "#F7595D"],
+      // color: ["#D5ECD5", "#D5ECD5", "#D5ECD5", "#F98285", "#F98285"],
+      // color: ["#D5ECD5", "#639AFB", "#F9D25A", "#F8A750", "#F98285"],
+      color: ["#D5ECD5", "lightskyblue", "#F9D25A", "#f1b26f", "#F98285"],
       series: [
           {
               name: '1s',
