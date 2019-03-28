@@ -316,7 +316,7 @@ export default class Topology extends PureComponent {
 
     const cols = {
       count: {
-        tickInterval: 3000,
+        // tickInterval: 3000,
       },
     };
     return (

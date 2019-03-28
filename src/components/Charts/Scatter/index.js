@@ -106,7 +106,7 @@ class HeatMap extends Component {
     propsData.onClick({ start: dtStart, end: dtEnd }, { min, max });
   };
 
-  redirectToTracePage (start, end) {
+  redirectToTracePage (start, end, minDuration, maxDuratoin) {
     const { history, serviceId } = this.props;
     redirect(history, '/trace', { values: { duration: generateDuration({
         from() {
@@ -117,6 +117,8 @@ class HeatMap extends Component {
         },
       }),
       serviceId,
+      minTraceDuration: minDuration,
+      maxTraceDuration: maxDuratoin,
         } })
 
   }
@@ -133,12 +135,17 @@ class HeatMap extends Component {
         onBrushend(ev, p2, p3, p4, p5) {
           const { data } = this._getSelected()
           const xAxisArr = []
+          const durationList = []
           data.forEach(item => {
             xAxisArr.push(item.datetime)
+            durationList.push(item.responseTime)
           })
           xAxisArr.sort((a, b) => a - b)
+          durationList.sort((a, b) => a - b)
+          const { data: { responseTimeStep } } = that.props
+          const minDuration = durationList[0] * responseTimeStep * 2
+          const maxDuration = (durationList[durationList.length - 1] + 1) * responseTimeStep * 2
           // 获取到xAxisArr的最大值 最小值
-          // console.log(xAxisArr, "xAxisArr")
           if(xAxisArr.length !== 0) {
             // 将数据存储到store里面
             const { duration: { raw: { range: timeRange } } } = that.props
@@ -146,7 +153,7 @@ class HeatMap extends Component {
             const startIndex = xAxisArr[0]
             const start = timeRange[startIndex]
             const end = timeRange[endIndex]
-            that.redirectToTracePage(start, end)
+            that.redirectToTracePage(start, end, minDuration, maxDuration)
           }
         },
       })
