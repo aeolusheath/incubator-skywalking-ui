@@ -145,8 +145,15 @@ class HeatMap extends Component {
       brush = new Brush({
         canvas: chart.get("canvas"),
         chart,
+        onBrushStart() {
+
+        },
         onBrushend(ev, p2, p3, p4, p5) {
+          // console.log(ev, p2, p3, p4, p5, "abc")
           const { data } = ev
+          // const { x, y } = ev;
+          // const views = chart.getViewsByPoint({ x, y })
+          // console.log(views, "wjjj")
           const xAxisArr = []
           const durationList = []
           data.forEach(item => {
@@ -288,7 +295,7 @@ class HeatMap extends Component {
             // padding={{left: 50}}
             // onPlotClick={() =>{}}
             onPlotClick={(param) => {
-              // console.log("param------->>>>>>>>>abcdefg", param)
+              console.log("param------->>>>>>>>>", param)
               }
             }
           >

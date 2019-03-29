@@ -186,11 +186,27 @@ query responseSecondMetric($duration: Duration!, $id: ID!)
 
 `
 
+const scatterDataQuery = `
+  query ScatterData($duration: Duration!, $id: ID!) {
+      getThermodynamic(duration: $duration, metric: {
+        name: "service_heatmap",
+        id: $id
+      }) {
+        nodes
+        responseTimeStep: axisYStep
+      }
+  }
+`
 
 
 export default base({
   namespace: 'topology',
   state: {
+    // 散点图
+    getThermodynamic: {
+      nodes: [],
+      responseTimeStep: 0,
+    },
     getGlobalTopology: {
       nodes: [],
       calls: [],
@@ -248,21 +264,6 @@ export default base({
           values: [],
         },
       },
-      // error: {
-      //   values: [],
-      // },
-      // s1: {
-      //   values: [],
-      // },
-      // s3: {
-      //   values: [],
-      // },
-      // s5: {
-      //   values: [],
-      // },
-      // slow: {
-      //   values: [],
-      // },
     },
   },
   varState: {
@@ -288,6 +289,16 @@ export default base({
     }
   `,
   effects: {
+    *fetchScatterMetric({ payload }, { call, put }) {
+      const { id, duration } = payload.variables
+      const { data = {} } = yield call(exec, { query: scatterDataQuery, variables: { id, duration } })
+      yield put({
+        type: 'saveData',
+        payload: {
+          getThermodynamic: data.getThermodynamic,
+        },
+      })
+    },
     *fetchResponseValuesMetric({ payload }, { call, put }) {
       const { idsP, duration } = payload.variables
       const { data = {} } = yield call(exec, { query: responseValueMetricQuery, variables: { idsP, duration } })
@@ -301,16 +312,10 @@ export default base({
     },
     *fetchResponseLinearMetric({ payload }, { call, put }) {
       const { id, duration } = payload.variables
-      // const duration1 = {
-      //   end: "2019-03-22 1420",
-      //   start: "2019-03-22 1405",
-      //   step: "MINUTE",
-      // }
       const { data = {} } = yield call(exec, { query: responseLinearMetricQuery, variables: { id, duration } })
       let xAxisData = []
       const yAxisData = {}
       const formatDateTime = (datetime) => {
-        //  const year = datetime.substr(0, 4)
          const year = ''
          const date = datetime.substr(4, 4)
          const time = datetime.substr(8, 4)
@@ -319,7 +324,6 @@ export default base({
          return result
        }
       const formatFunc = (resData) => {
-        // resData.s1.values[0].id = '2019032814444_2'
         const summaryTypes = Object.keys(resData)
         const firstSummaryType = summaryTypes[0] // error s1 s3 s5 slow
         xAxisData = resData[firstSummaryType].values.map(item => {
@@ -355,7 +359,6 @@ export default base({
         const { data: cData = {}  } = yield call(exec, { query: clientMetricQuery, variables: { idsC, duration } });
         metrics = { ...metrics, ...cData };
       }
-      // console.log(idsC, "what is this variable---------->>>>>")
       const { cpmS = { values:[] }, cpmC = { values:[] }, latencyS = { values:[] }, latencyC = { values:[] } } = metrics;
       metrics = {
         ...metrics,

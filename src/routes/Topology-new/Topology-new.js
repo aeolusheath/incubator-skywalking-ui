@@ -18,28 +18,19 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Icon, Radio, Avatar, Select, Input, Popover, Tag, Form } from 'antd';
+import { Row, Col, Icon, Radio, Avatar, Select, Form } from 'antd';
 import {
-  G2,
   Chart,
   Geom,
   Axis,
   Tooltip,
-  Coord,
-  Label,
-  Legend,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util,
 } from "bizcharts";
-import DataSet from "@antv/data-set";
-import { relative } from 'upath';
+// import DataSet from "@antv/data-set";
+// import { relative } from 'upath';
 import { ChartCard, Scatter, ColumnStack } from '../../components/Charts';
 import { AppTopology } from '../../components/Topology';
 import { Panel } from '../../components/Page';
-import ApplicationLitePanel from '../../components/ApplicationLitePanel';
+// import ApplicationLitePanel from '../../components/ApplicationLitePanel';
 import DescriptionList from '../../components/DescriptionList';
 import { redirect } from '../../utils/utils';
 import { generateDuration } from '../../utils/time';
@@ -139,15 +130,28 @@ export default class Topology extends PureComponent {
       type: 'topology/fetchData',
       payload: { variables },
     });
-    // 获取首页的热力图表格数据
-    dispatch({
-      type: 'dashboard/fetchData',
-      payload: { variables },
-    });
-    // TODO 要在panel里面传入variable变量，这个变量是来监听service Id的 [variable的值是 render里面的values]
+    // // 获取首页的热力图表格数据
+    // dispatch({
+    //   type: 'dashboard/fetchData',
+    //   payload: { variables },
+    // });
     // 这里要根据serviceId 去获取service相关的值。比如我们要去获取表格数据 需要以来于serviceId
     this.retrieveResponseValues([variables.serviceId])
     this.retrieveResponseLinearValues(variables.serviceId)
+    this.retrieveScatterMetric(variables.serviceId)
+  }
+
+  retrieveScatterMetric = (id) => {
+    const { dispatch, globalVariables: { duration } } = this.props
+    dispatch({
+      type: 'topology/fetchScatterMetric',
+      payload: {
+        variables: {
+          id,
+          duration,
+        },
+      },
+    })
   }
 
   retrieveResponseValues = (idsP) => {
@@ -371,107 +375,10 @@ export default class Topology extends PureComponent {
     const { variables: { values, options, labels } } = propsData.service;
     const { metrics, layout = 0 } = data;
     const { getGlobalTopology: topologData, responseLinearMetric } = data;
-    const { dashboard, duration } = this.props
-    const dashboardData = dashboard.data
-    // const thirdData = [
-    //   {
-    //     year: "1986",
-    //     ACME: 162,
-    //     Compitor: 42,
-    //   },
-    //   {
-    //     year: "1987",
-    //     ACME: 162,
-    //     Compitor: 42,
-    //   },
-    //   {
-    //     year: "1988",
-    //     ACME: 162,
-    //     Compitor: 42,
-    //   },
-    //   {
-    //     year: "1989",
-    //     ACME: 162,
-    //     Compitor: 42,
-    //   },
-    //   {
-    //     year: "1990",
-    //     ACME: 162,
-    //     Compitor: 42,
-    //   },
-    //   {
-    //     year: "1991",
-    //     ACME: 144,
-    //     Compitor: 54,
-    //   },
-    //   {
-    //     year: "1992",
-    //     ACME: 125,
-    //     Compitor: 35,
-    //   },
-    // ];
-    // const thirdDv = new DataSet.View().source(thirdData);
-    // thirdDv.transform({
-    //   type: "fold",
-    //   fields: ["ACME", "Compitor"],
-    //   key: "type",
-    //   value: "value",
-    // });
-    // const thirdScale = {
-    //   value: {
-    //     alias: "The Share Price in Dollars",
-    //     formatter(val) {
-    //       return `$${  val}`;
-    //     },
-    //   },
-    //   year: {
-    //     range: [0, 1],
-    //   },
-    // };
-    // const thirdNode = (
-    //   <div
-    //     style={{
-    //           border: "1px solid #e8e8e8",
-    //           backgroundColor: "#fff",
-    //           marginTop: "7px",
-    //           height: "213px",
-    //         }}
-    //   >
-    //     <Chart
-    //       height={200}
-    //       data={thirdDv}
-    //       scale={thirdScale}
-    //       forceFit
-    //       padding={[ 20, 30, 20, 50]}
-
-    //     >
-    //       <Tooltip crosshairs />
-    //       <Axis />
-    //       <Geom type="area" position="year*value" color="type" shape="smooth" />
-    //       <Geom
-    //         type="line"
-    //         position="year*value"
-    //         color="type"
-    //         shape="smooth"
-    //         size={2}
-    //       />
-    //     </Chart>
-    //   </div>
-
-
-    // );
-
-
-
-
-    // const content = (
-    //   <div>
-    //     <p><Tag color="#40a9ff">Less than {latencyRange[0]} ms </Tag></p>
-    //     <p><Tag color="#d4b106">Between {latencyRange[0]} ms and {latencyRange[1]} ms</Tag></p>
-    //     <p><Tag color="#cf1322">More than {latencyRange[1]} ms</Tag></p>
-    //   </div>
-    // );
+    const { duration, topology } = this.props
+    const { data: { getThermodynamic: scatterData } } = topology
     const { getFieldDecorator } = propsData.form;
+
     return (
       <Panel globalVariables={propsData.globalVariables} variables={values} onChange={this.handleChange}>
         <Row gutter={8}>
@@ -540,7 +447,7 @@ export default class Topology extends PureComponent {
               <Scatter
                 serviceId={values.serviceId}
                 history={propsData.history}
-                data={dashboardData.getThermodynamic}
+                data={scatterData}
                 duration={duration}
                 height={200}
                 onClick={(d, responseTimeRange) => redirect(history, '/trace', { values: { duration: generateDuration({
