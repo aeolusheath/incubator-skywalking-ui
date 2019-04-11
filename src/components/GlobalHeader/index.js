@@ -139,11 +139,11 @@ export default class GlobalHeader extends PureComponent {
                 emptyImage="img/icon/alarm-backgroud.png"
               />
             </NoticeIcon>
-            <Dropdown overlay={menu}>
+            {/* <Dropdown overlay={menu}>
               <span className={`${styles.action} ${styles.account}`}>
                 <Avatar size="small" className={styles.avatar} icon="user" />
               </span>
-            </Dropdown>
+            </Dropdown> */}
           </div>
         ) : null}
       </Header>

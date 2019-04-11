@@ -25,6 +25,11 @@ import createLoading from 'dva-loading';
 import 'moment/locale/zh-cn';
 
 import './index.less';
+
+import { setAuthority } from './utils/authority';
+
+setAuthority('admin')
+
 // 1. Initialize
 const app = dva({
   history: createHistory(),
