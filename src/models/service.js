@@ -17,7 +17,7 @@
 
 
 import { base } from '../utils/models';
-import { exec } from '../services/graphql';
+import { exec, getResource } from '../services/graphql';
 
 const optionsQuery = `
   query ServiceOption($duration: Duration!) {
@@ -317,6 +317,10 @@ export default base({
     oldGCTime: {
       values: [],
     },
+    serviceKeyWords: {
+      env: '',
+      projects: [],
+    },
   },
   optionsQuery,
   dataQuery,
@@ -332,6 +336,25 @@ export default base({
         payload: response.data,
         serviceInstanceInfo,
       });
+    },
+    *fetchServiceFilterKey({ payload, callback }, { call, put }) {
+      // console.warn(payload, "当前payload")
+      const response = yield call(getResource)
+      // console.log(response, "response")
+      if (response.code === "200") {
+        const obj = {
+          env: response.env,
+          projects: response.projects,
+        }
+        yield put({
+          type: 'saveData',
+          payload: {
+            serviceKeyWords: obj,
+          },
+        })
+        // console.log(callback, "callback---->>>>>")
+        callback(obj)
+      }
     },
   },
   reducers: {

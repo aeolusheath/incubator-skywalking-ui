@@ -218,7 +218,7 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
       data: state,
     },
     effects: {
-      *initOptions({ payload }, { call, put }) {
+      *initOptions({ payload, type, serviceFilterKey }, { call, put }) {
         const { variables, reducer = undefined } = payload;
         const response = yield call(exec, { variables, query: optionsQuery });
         if (reducer) {
@@ -227,9 +227,31 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             payload: response.data,
           });
         } else {
+          let { data } = response
+          if (type === 'service/initOptions') {
+            // console.log(data, "data----->>>>")
+            // console.log(data.serviceId, "poi")
+            // data.serviceId[0] = {key: "3", label: "test#pb#service03" }
+            // console.log(serviceFilterKey.projects,"dd")
+            console.log("init servicelist", data.serviceId )
+            const prefixs = [];
+            const formatService = () => {
+              const { env } = serviceFilterKey;
+              serviceFilterKey.projects.forEach(item => {
+                prefixs.push(`${env}#${item}#`);
+              });
+            };
+            console.log("prefixs", prefixs)
+            formatService();
+            const res = data.serviceId.filter(item => {
+              return prefixs.some(prefix => item.label.indexOf(prefix) === 0)
+            })
+            data = res
+            console.log("filter servicelist", data)
+          }
           yield put({
             type: 'saveOptions',
-            payload: response.data,
+            payload: data,
           });
         }
       },

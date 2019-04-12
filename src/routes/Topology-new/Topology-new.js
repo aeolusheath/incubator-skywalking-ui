@@ -108,10 +108,21 @@ export default class Topology extends PureComponent {
   // 获取服务列表
   componentDidMount() {
     const {...propsData} = this.props;
+    // propsData.dispatch({
+    //   type: 'service/initOptions',
+    //   payload: { variables: propsData.globalVariables },
+    // });
     propsData.dispatch({
-      type: 'service/initOptions',
-      payload: { variables: propsData.globalVariables },
-    });
+      type: 'service/fetchServiceFilterKey',
+      payload: {},
+      callback: (obj) => {
+        propsData.dispatch({
+          type: 'service/initOptions',
+          serviceFilterKey: obj,
+          payload: { variables: propsData.globalVariables },
+        });
+      },
+    })
   }
 
   findValue = (id, values) => {

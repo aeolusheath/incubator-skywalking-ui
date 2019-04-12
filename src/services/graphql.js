@@ -31,3 +31,9 @@ export async function exec(playload) {
     body: playload,
   });
 }
+
+export async function getResource() {
+  return request(`/api/user/projects`, {
+    method: 'GET',
+  })
+}
