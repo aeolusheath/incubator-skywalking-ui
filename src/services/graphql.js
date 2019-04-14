@@ -33,7 +33,7 @@ export async function exec(playload) {
 }
 
 export async function getResource() {
-  return request(`/api/user/projects`, {
+  return request(`/user/projects`, {
     method: 'GET',
   })
 }
