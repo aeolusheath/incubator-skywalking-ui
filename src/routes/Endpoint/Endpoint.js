@@ -51,12 +51,39 @@ const { Option } = Select;
   },
 })
 export default class Endpoint extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      serviceFilterKey: {
+        env: '',
+        projects: [],
+      },
+    }
+  }
+
   componentDidMount() {
     const {...propsData} = this.props;
+    // propsData.dispatch({
+    //   type: 'endpoint/initOptions',
+    //   payload: { variables: propsData.globalVariables, reducer: 'saveServiceInfo' },
+    // });
     propsData.dispatch({
-      type: 'endpoint/initOptions',
-      payload: { variables: propsData.globalVariables, reducer: 'saveServiceInfo' },
-    });
+      type: 'service/fetchServiceFilterKey',
+      payload: {},
+      callback: (obj) => {
+        this.setState({serviceFilterKey: obj})
+        // propsData.dispatch({
+        //   type: 'service/initOptions',
+        //   serviceFilterKey: obj,
+        //   payload: { variables: propsData.globalVariables },
+        // });
+        propsData.dispatch({
+          type: 'endpoint/initOptions',
+          serviceFilterKey: obj,
+          payload: { variables: propsData.globalVariables, reducer: 'saveServiceInfo' },
+        });
+      },
+    })
   }
 
   componentWillUpdate(nextProps) {
@@ -64,8 +91,10 @@ export default class Endpoint extends PureComponent {
     if (nextProps.globalVariables.duration === propsData.globalVariables.duration) {
       return;
     }
+    const { serviceFilterKey } = this.state
     propsData.dispatch({
       type: 'endpoint/initOptions',
+      serviceFilterKey,
       payload: { variables: nextProps.globalVariables, reducer: 'saveServiceInfo' },
     });
   }

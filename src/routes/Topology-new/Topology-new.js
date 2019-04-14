@@ -102,6 +102,16 @@ export default class Topology extends PureComponent {
     graphHeight: 600,
   };
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      serviceFilterKey: {
+        env: '',
+        projects: [],
+      },
+    }
+  }
+
   componentWillMount() {
   }
 
@@ -116,6 +126,7 @@ export default class Topology extends PureComponent {
       type: 'service/fetchServiceFilterKey',
       payload: {},
       callback: (obj) => {
+        this.setState({serviceFilterKey: obj})
         propsData.dispatch({
           type: 'service/initOptions',
           serviceFilterKey: obj,
@@ -137,8 +148,12 @@ export default class Topology extends PureComponent {
   // 所以在这个handleChange方法里面需要去获取dashboard的热力图数据
   handleChange = (variables) => {
     const { dispatch } = this.props;
+    console.log("11111")
+    console.log(this.state.serviceFilterKey, "ddd")
+    const { serviceFilterKey } = this.state
     dispatch({
       type: 'topology/fetchData',
+      serviceFilterKey,
       payload: { variables },
     });
     // // 获取首页的热力图表格数据

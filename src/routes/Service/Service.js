@@ -56,12 +56,33 @@ const middleColResponsiveProps = {
   },
 })
 export default class Service extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      serviceFilterKey: {
+        env: '',
+        projects:[],
+    }}
+  }
+
   componentDidMount() {
     const { ...propsData } = this.props;
+    // propsData.dispatch({
+    //   type: 'service/initOptions',
+    //   payload: { variables: propsData.globalVariables },
+    // });
     propsData.dispatch({
-      type: 'service/initOptions',
-      payload: { variables: propsData.globalVariables },
-    });
+      type: 'service/fetchServiceFilterKey',
+      payload: {},
+      callback: (obj) => {
+        this.setState({serviceFilterKey: obj})
+        propsData.dispatch({
+          type: 'service/initOptions',
+          serviceFilterKey: obj,
+          payload: { variables: propsData.globalVariables },
+        });
+      },
+    })
   }
 
   componentWillUpdate(nextProps) {
@@ -69,8 +90,10 @@ export default class Service extends PureComponent {
     if (nextProps.globalVariables.duration === propsData.globalVariables.duration) {
       return;
     }
+    const { serviceFilterKey } = this.state
     propsData.dispatch({
       type: 'service/initOptions',
+      serviceFilterKey,
       payload: { variables: nextProps.globalVariables },
     });
   }

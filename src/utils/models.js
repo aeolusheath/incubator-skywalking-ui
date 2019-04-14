@@ -105,7 +105,7 @@ export function generateModal({ namespace, dataQuery, optionsQuery, defaultOptio
       *fetchData({ payload }, { call, put }) {
         const { variables, reducer = undefined } = payload;
         const response = yield call(queryService, namespace, { variables, query: dataQuery });
-        console.log("11111")
+        // console.log("11111")
         if (!response.data) {
           return;
         }
@@ -227,8 +227,12 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             payload: response.data,
           });
         } else {
+          console.log("到这里？？？？？")
           let { data } = response
-          if (type === 'service/initOptions') {
+          // if (type === 'service/initOptions' || type === 'trace/initOptions') {
+          // 'service/initOptions',
+          if (['trace/initOptions', 'endpoint/initOptions', 'service/initOptions'].includes(type)) {
+          // if (type === 'service/initOptions') {
             // console.log(data, "data----->>>>")
             // console.log(data.serviceId, "poi")
             // data.serviceId[0] = {key: "3", label: "test#pb#service03" }
@@ -249,13 +253,14 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             data = res
             console.log("filter servicelist", data)
           }
+          console.log(data, "data")
           yield put({
             type: 'saveOptions',
             payload: data,
           });
         }
       },
-      *fetchData({ payload }, { call, put }) {
+      *fetchData({ payload, type, serviceFilterKey }, { call, put }) {
         const { variables, reducer = undefined } = payload;
         const response = yield call(exec, { variables, query: dataQuery });
         if (!response.data) {
@@ -267,6 +272,11 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             payload: response.data,
           });
         } else {
+          console.log(type, "到这里了吗？？？？------》》》》00---")
+          if (type === 'topology/fetchData') {
+            // 这里需要用serviceFilterKey 去过滤 返回的nodes
+            console.log(serviceFilterKey, "serviceFilterKey")
+          }
           yield put({
             type: 'saveData',
             payload: response.data,

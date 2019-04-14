@@ -57,10 +57,26 @@ export default class Trace extends PureComponent {
     const {...propsData} = this.props;
     const { trace: { variables: { values } } } = this.props;
     const { duration } = values;
-    propsData.dispatch({
-      type: 'trace/initOptions',
-      payload: { variables: { duration: duration.input } },
-    });
+    // propsData.dispatch({
+    //   type: 'trace/initOptions',
+    //   payload: { variables: { duration: duration.input } },
+    // });
+     propsData.dispatch({
+      type: 'service/fetchServiceFilterKey',
+      payload: {},
+      callback: (obj) => {
+        // propsData.dispatch({
+        //   type: 'service/initOptions',
+        //   serviceFilterKey: obj,
+        //   payload: { variables: propsData.globalVariables },
+        // });
+        propsData.dispatch({
+          type: 'trace/initOptions',
+          serviceFilterKey: obj,
+          payload: { variables: { duration: duration.input } },
+        });
+      },
+    })
     const condition = { ...values };
     condition.queryDuration = values.duration.input;
     delete condition.duration;
@@ -223,13 +239,15 @@ export default class Trace extends PureComponent {
             };
           }]}
         />
-      </Chart>);
+      </Chart>
+);
   }
 
   renderForm() {
     const {...propsData} = this.props;
     const { getFieldDecorator } = propsData.form;
     const { trace: { variables: { options } }, zone } = this.props;
+    console.log(this.props, "abcdeftsss")
     return (
       <Form onSubmit={this.handleSearch} layout="vertical">
         <FormItem label={`Time Range(${zone})`}>
@@ -254,7 +272,8 @@ export default class Trace extends PureComponent {
                   return (
                     <Option key={service.key ? service.key : -1} value={service.key}>
                       {service.label}
-                    </Option>);
+                    </Option>
+);
                 })}
             </Select>
           )}
@@ -339,7 +358,8 @@ export default class Trace extends PureComponent {
             }}
           />
         </Col>
-      </Row>);
+      </Row>
+);
   }
 
   render() {
