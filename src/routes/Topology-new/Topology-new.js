@@ -117,6 +117,7 @@ export default class Topology extends PureComponent {
 
   // 获取服务列表
   componentDidMount() {
+    console.log("go into topo-new page")
     const {...propsData} = this.props;
     // propsData.dispatch({
     //   type: 'service/initOptions',
@@ -126,6 +127,7 @@ export default class Topology extends PureComponent {
       type: 'service/fetchServiceFilterKey',
       payload: {},
       callback: (obj) => {
+        console.log("get filter key", obj)
         this.setState({serviceFilterKey: obj})
         propsData.dispatch({
           type: 'service/initOptions',

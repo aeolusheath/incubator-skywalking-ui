@@ -341,7 +341,7 @@ export default base({
       // console.warn(payload, "当前payload")
       const response = yield call(getResource)
       // console.log(response, "response")
-      if (response.code === "200") {
+      if (response.code === 200) {
         const obj = {
           env: response.env,
           projects: response.projects,
