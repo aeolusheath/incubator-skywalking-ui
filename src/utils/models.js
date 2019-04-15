@@ -228,9 +228,10 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
           });
         } else {
           console.log("到这里？？？？？")
-          let { data } = response
+          const { data } = response
           // if (type === 'service/initOptions' || type === 'trace/initOptions') {
           // 'service/initOptions',
+          let formatData = data
           if (['trace/initOptions', 'endpoint/initOptions', 'service/initOptions'].includes(type)) {
           // if (type === 'service/initOptions') {
             // console.log(data, "data----->>>>")
@@ -250,13 +251,15 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             const res = data.serviceId.filter(item => {
               return prefixs.some(prefix => item.label.indexOf(prefix) === 0)
             })
-            data = res
+            formatData = {
+              serviceId: res,
+            }
             console.log("filter servicelist", data)
           }
           console.log(data, "data")
           yield put({
             type: 'saveOptions',
-            payload: data,
+            payload: formatData,
           });
         }
       },
