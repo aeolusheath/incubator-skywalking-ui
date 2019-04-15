@@ -105,7 +105,6 @@ export function generateModal({ namespace, dataQuery, optionsQuery, defaultOptio
       *fetchData({ payload }, { call, put }) {
         const { variables, reducer = undefined } = payload;
         const response = yield call(queryService, namespace, { variables, query: dataQuery });
-        // console.log("11111")
         if (!response.data) {
           return;
         }
@@ -222,37 +221,35 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
         const { variables, reducer = undefined } = payload;
         const response = yield call(exec, { variables, query: optionsQuery });
         if (reducer) {
-          yield put({
-            type: reducer,
-            payload: response.data,
-          });
+          // endpoint 的保存option走的这里
+          if (reducer === 'saveServiceInfo') {
+            const { env, projects } = serviceFilterKey
+            const prefixes = getPrefixes(env, projects)
+            const filterServiceList = getFilterServiceList(prefixes, response.data.serviceId)
+            yield put({
+              type: reducer,
+              payload: {
+                serviceId: filterServiceList,
+              },
+            });
+          } else {
+            yield put({
+              type: reducer,
+              payload: response.data,
+            });
+          }
         } else {
-          console.log("到这里？？？？？")
           const { data } = response
           // if (type === 'service/initOptions' || type === 'trace/initOptions') {
           // 'service/initOptions',
           let formatData = data
           if (['trace/initOptions', 'endpoint/initOptions', 'service/initOptions'].includes(type)) {
-          // if (type === 'service/initOptions') {
-            // console.log(data, "data----->>>>")
-            // console.log(data.serviceId, "poi")
-            // data.serviceId[0] = {key: "3", label: "test#pb#service03" }
-            // console.log(serviceFilterKey.projects,"dd")
-            console.log("init servicelist", data.serviceId )
-            const prefixs = [];
-            const formatService = () => {
-              const { env } = serviceFilterKey;
-              serviceFilterKey.projects.forEach(item => {
-                prefixs.push(`${env}#${item}#`);
-              });
-            };
-            console.log("prefixs", prefixs)
-            formatService();
-            const res = data.serviceId.filter(item => {
-              return prefixs.some(prefix => item.label.indexOf(prefix) === 0)
-            })
+            const { env, projects } = serviceFilterKey
+            const prefixes = getPrefixes(env, projects)
+            const filterServiceList = getFilterServiceList(prefixes, data.serviceId)
+
             formatData = {
-              serviceId: res,
+              serviceId: filterServiceList,
             }
             console.log("filter servicelist", data)
           }
@@ -275,10 +272,9 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             payload: response.data,
           });
         } else {
-          console.log(type, "到这里了吗？？？？------》》》》00---")
           if (type === 'topology/fetchData') {
             // 这里需要用serviceFilterKey 去过滤 返回的nodes
-            console.log(serviceFilterKey, "serviceFilterKey")
+            console.log(serviceFilterKey, "serviceFilterKey fetchData")
           }
           yield put({
             type: 'saveData',
@@ -367,4 +363,19 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
       ...subscriptions,
     },
   };
+}
+
+function getPrefixes(env, projects) {
+  const prefixes = []
+  projects.forEach(item => {
+    prefixes.push(`${env}#${item}#`);
+  });
+  return prefixes
+}
+
+function getFilterServiceList(prefixes, serviceList) {
+  const list = serviceList || []
+  return list.filter(item => {
+     return prefixes.some(prefix => item.label.indexOf(prefix) === 0)
+  })
 }

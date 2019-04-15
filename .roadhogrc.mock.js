@@ -56,7 +56,7 @@ addMockFunctionsToSchema({
 const proxy = {
   // 模拟
   'GET /user/projects': (req, res) => {
-    res.send({"code":"200","message":"ok","projects":["pa","pb"],env:"test"})
+    res.send({"code":200,"message":"ok","projects":["pa","pb"],env:"test"})
   },
   'POST /api/graphql': (req, res) => {
     const { query: source, variables: variableValues } = req.body;

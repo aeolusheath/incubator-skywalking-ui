@@ -63,20 +63,11 @@ export default class Endpoint extends PureComponent {
 
   componentDidMount() {
     const {...propsData} = this.props;
-    // propsData.dispatch({
-    //   type: 'endpoint/initOptions',
-    //   payload: { variables: propsData.globalVariables, reducer: 'saveServiceInfo' },
-    // });
     propsData.dispatch({
-      type: 'service/fetchServiceFilterKey',
+      type: 'endpoint/fetchServiceFilterKeyInEndpoint',
       payload: {},
       callback: (obj) => {
-        this.setState({serviceFilterKey: obj})
-        // propsData.dispatch({
-        //   type: 'service/initOptions',
-        //   serviceFilterKey: obj,
-        //   payload: { variables: propsData.globalVariables },
-        // });
+        this.setState({ serviceFilterKey: obj })
         propsData.dispatch({
           type: 'endpoint/initOptions',
           serviceFilterKey: obj,

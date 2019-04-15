@@ -337,10 +337,8 @@ export default base({
         serviceInstanceInfo,
       });
     },
-    *fetchServiceFilterKey({ payload, callback }, { call, put }) {
-      // console.warn(payload, "当前payload")
+    *fetchServiceFilterKey({ callback }, { call, put }) {
       const response = yield call(getResource)
-      // console.log(response, "response")
       if (response.code === 200) {
         const obj = {
           env: response.env,
@@ -352,7 +350,6 @@ export default base({
             serviceKeyWords: obj,
           },
         })
-        // console.log(callback, "callback---->>>>>")
         callback(obj)
       }
     },

@@ -119,10 +119,6 @@ export default class Topology extends PureComponent {
   componentDidMount() {
     console.log("go into topo-new page")
     const {...propsData} = this.props;
-    // propsData.dispatch({
-    //   type: 'service/initOptions',
-    //   payload: { variables: propsData.globalVariables },
-    // });
     propsData.dispatch({
       type: 'service/fetchServiceFilterKey',
       payload: {},
@@ -150,8 +146,7 @@ export default class Topology extends PureComponent {
   // 所以在这个handleChange方法里面需要去获取dashboard的热力图数据
   handleChange = (variables) => {
     const { dispatch } = this.props;
-    console.log("11111")
-    console.log(this.state.serviceFilterKey, "ddd")
+    console.log(this.state.serviceFilterKey, "topo handle change")
     const { serviceFilterKey } = this.state
     dispatch({
       type: 'topology/fetchData',

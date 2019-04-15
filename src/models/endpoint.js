@@ -17,7 +17,7 @@
 
 
 import { base, saveOptionsInState } from '../utils/models';
-import { exec } from '../services/graphql';
+import { exec, getResource } from '../services/graphql';
 
 const optionsQuery = `
   query ServiceOption($duration: Duration!) {
@@ -280,6 +280,16 @@ export default base({
         },
       });
     },
+    *fetchServiceFilterKeyInEndpoint({ callback }, { call }) {
+      const response = yield call(getResource)
+      if (response.code === 200) {
+        const obj = {
+          env: response.env,
+          projects: response.projects,
+        }
+        callback(obj)
+      }
+    },
   },
   reducers: {
     saveSpans(state, { payload, traceId }) {
@@ -304,6 +314,7 @@ export default base({
       if (!values.serviceId) {
         return rawState;
       }
+      console.log("到这里了吗----》》》》》")
       return {
         ...rawState,
         data: {
