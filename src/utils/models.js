@@ -271,16 +271,29 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             type: reducer,
             payload: response.data,
           });
-        } else {
-          if (type === 'topology/fetchData') {
+        } else if (type === 'topology/fetchData') {
             // 这里需要用serviceFilterKey 去过滤 返回的nodes
-            console.log(serviceFilterKey, "serviceFilterKey fetchData")
+            const formatData = response.data
+            // console.log(serviceFilterKey, formatData, "serviceFilterKey fetchData")
+            const { getGlobalTopology: { nodes } } = formatData
+            const { env, projects } = serviceFilterKey
+            const prefixes = getPrefixes(env, projects, false)
+            const filterNodes = getFilterServiceList(prefixes, nodes, "name")
+            console.log(filterNodes, nodes, prefixes, "topo filter result")
+            formatData.getGlobalTopology.nodes = filterNodes
+            // console.log(test.getGlobalTopology.nodes.length, "之前")
+            // test.getGlobalTopology.nodes.splice(0, 1)
+            // console.log(test.getGlobalTopology.nodes.length, "之后")
+            yield put({
+              type: 'saveData',
+              payload: formatData,
+            });
+          } else {
+            yield put({
+              type: 'saveData',
+              payload: response.data,
+            });
           }
-          yield put({
-            type: 'saveData',
-            payload: response.data,
-          });
-        }
       },
       ...effects,
     },
@@ -365,7 +378,9 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
   };
 }
 
-function getPrefixes(env, projects) {
+// 帮助方法
+function getPrefixes(env, projects, hasProjectFilter = true) {
+  if (!hasProjectFilter) return [`${env}#`]
   const prefixes = []
   projects.forEach(item => {
     prefixes.push(`${env}#${item}#`);
@@ -373,9 +388,9 @@ function getPrefixes(env, projects) {
   return prefixes
 }
 
-function getFilterServiceList(prefixes, serviceList) {
+function getFilterServiceList(prefixes, serviceList, key = "label") {
   const list = serviceList || []
   return list.filter(item => {
-     return prefixes.some(prefix => item.label.indexOf(prefix) === 0)
+     return prefixes.some(prefix => item[key].indexOf(prefix) === 0)
   })
 }
