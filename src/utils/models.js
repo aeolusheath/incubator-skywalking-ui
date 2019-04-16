@@ -266,11 +266,21 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
         if (!response.data) {
           return;
         }
+        console.log(type, reducer, "reducer------->>>")
         if (reducer) {
-          yield put({
-            type: reducer,
-            payload: response.data,
-          });
+          // 过滤Alerm页面的服务
+          if (type === 'alarm/fetchData' && reducer === "saveServiceAlarmList") {
+            yield put({
+              type: reducer,
+              payload: response.data,
+            });
+          }
+          else {
+            yield put({
+              type: reducer,
+              payload: response.data,
+            });
+          }
         } else if (type === 'topology/fetchData') {
             // 这里需要用serviceFilterKey 去过滤 返回的nodes
             const formatData = response.data
@@ -288,7 +298,7 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
               type: 'saveData',
               payload: formatData,
             });
-          } else {
+        } else {
             yield put({
               type: 'saveData',
               payload: response.data,
