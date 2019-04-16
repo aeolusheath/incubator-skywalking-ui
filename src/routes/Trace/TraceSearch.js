@@ -61,15 +61,10 @@ export default class Trace extends PureComponent {
     //   type: 'trace/initOptions',
     //   payload: { variables: { duration: duration.input } },
     // });
-     propsData.dispatch({
-      type: 'service/fetchServiceFilterKey',
+    propsData.dispatch({
+      type: 'trace/fetchServiceFilterKeyInTrace',
       payload: {},
       callback: (obj) => {
-        // propsData.dispatch({
-        //   type: 'service/initOptions',
-        //   serviceFilterKey: obj,
-        //   payload: { variables: propsData.globalVariables },
-        // });
         propsData.dispatch({
           type: 'trace/initOptions',
           serviceFilterKey: obj,
@@ -247,7 +242,7 @@ export default class Trace extends PureComponent {
     const {...propsData} = this.props;
     const { getFieldDecorator } = propsData.form;
     const { trace: { variables: { options } }, zone } = this.props;
-    console.log(this.props, "abcdeftsss")
+    // console.log(this.props, "abcdeftsss")
     return (
       <Form onSubmit={this.handleSearch} layout="vertical">
         <FormItem label={`Time Range(${zone})`}>

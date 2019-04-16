@@ -16,7 +16,7 @@
  */
 
 import moment from 'moment';
-import { exec } from '../services/graphql';
+import { exec, getResource } from '../services/graphql';
 import { base } from '../utils/models';
 import { generateDuration } from '../utils/time';
 
@@ -123,6 +123,16 @@ export default base({
         payload: response,
         traceId: payload.variables.traceId,
       });
+    },
+    *fetchServiceFilterKeyInTrace({ callback }, { call }) {
+      const response = yield call(getResource)
+      if (response.code === 200) {
+        const obj = {
+          env: response.env,
+          projects: response.projects,
+        }
+        callback(obj)
+      }
     },
   },
   reducers: {

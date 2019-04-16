@@ -27,6 +27,14 @@ const codeMessage = {
 };
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
+    const { headers } = response;
+    if (headers.invalid) {
+      let win = window
+      if (win !== win.top) {
+        win = win.top
+      }
+      win.location.href = headers.url
+    }
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
