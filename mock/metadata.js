@@ -61,7 +61,7 @@ export default {
     // 加上env#pb#xxx是为了测试 /user/projects的请求
     // 过滤services
     const data = mockjs.mock({
-      'serviceId|20-50': [{ 'id|+1': 3, name: function () { if (this.id === 3) { return `test#pa#service-${this.id}`  } return `service-${this.id}`; } }], // eslint-disable-line
+      'serviceId|20-50': [{ 'id|+1': 3, name: function () { if (this.id === 3) { return `pa#service-${this.id}`  } return `service-${this.id}`; } }], // eslint-disable-line
     });
     return data.serviceId;
   },

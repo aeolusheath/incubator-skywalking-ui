@@ -281,23 +281,6 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
               payload: response.data,
             });
           }
-        } else if (type === 'topology/fetchData') {
-            // 这里需要用serviceFilterKey 去过滤 返回的nodes
-            const formatData = response.data
-            // console.log(serviceFilterKey, formatData, "serviceFilterKey fetchData")
-            const { getGlobalTopology: { nodes } } = formatData
-            const { env, projects } = serviceFilterKey
-            const prefixes = getPrefixes(env, projects, false)
-            const filterNodes = getFilterServiceList(prefixes, nodes, "name")
-            console.log(filterNodes, nodes, prefixes, "topo filter result")
-            formatData.getGlobalTopology.nodes = filterNodes
-            // console.log(test.getGlobalTopology.nodes.length, "之前")
-            // test.getGlobalTopology.nodes.splice(0, 1)
-            // console.log(test.getGlobalTopology.nodes.length, "之后")
-            yield put({
-              type: 'saveData',
-              payload: formatData,
-            });
         } else {
             yield put({
               type: 'saveData',
@@ -389,11 +372,10 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
 }
 
 // 帮助方法
-function getPrefixes(env, projects, hasProjectFilter = true) {
-  if (!hasProjectFilter) return [`${env}#`]
+function getPrefixes(env, projects) {
   const prefixes = []
   projects.forEach(item => {
-    prefixes.push(`${env}#${item}#`);
+    prefixes.push(`${item}#`);
   });
   return prefixes
 }
