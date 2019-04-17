@@ -17,6 +17,8 @@
 
 
 import { base } from '../utils/models';
+import { getResource } from '../services/graphql';
+
 
 export default base({
   namespace: 'dashboard',
@@ -122,4 +124,16 @@ export default base({
       }
     }
   `,
+  effects: {
+    *fetchServiceFilterKeyInDashboard({ callback }, { call }) {
+      const response = yield call(getResource)
+      if (response.code === 200) {
+        const obj = {
+          env: response.env,
+          projects: response.projects,
+        }
+        callback(obj)
+      }
+    },
+  },
 });

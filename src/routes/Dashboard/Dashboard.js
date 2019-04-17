@@ -33,12 +33,35 @@ import RankList from '../../components/RankList';
   globalVariables: state.global.globalVariables,
 }))
 export default class Dashboard extends PureComponent {
+  // constructor(props) {
+  //   super(props)
+  //   this.state = {
+  //     serviceFilterKey: {
+  //       env: '',
+  //       projects: [],
+  //     },
+  //   }
+  // }
+
   handleDurationChange = (variables) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'dashboard/fetchData',
-      payload: { variables },
-    });
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'dashboard/fetchData',
+    //   payload: { variables },
+    // });
+    const {...propsData} = this.props;
+    propsData.dispatch({
+      type: 'dashboard/fetchServiceFilterKeyInDashboard',
+      payload: {},
+      callback: (obj) => {
+        // this.setState({ serviceFilterKey: obj })
+        propsData.dispatch({
+          serviceFilterKey: obj,
+          type: 'dashboard/fetchData',
+          payload: { variables },
+        });
+      },
+    })
   }
 
   renderAction = (prompt, path) => {

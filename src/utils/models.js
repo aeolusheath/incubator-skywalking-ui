@@ -266,22 +266,36 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
         if (!response.data) {
           return;
         }
-        console.log(type, reducer, "reducer------->>>")
         if (reducer) {
           // 过滤Alerm页面的服务
-          if (type === 'alarm/fetchData' && reducer === "saveServiceAlarmList") {
+          // if (type === 'alarm/fetchData' && reducer === "saveServiceAlarmList") {
+          //   yield put({
+          //     type: reducer,
+          //     payload: response.data,
+          //   });
+          // }
+          // else {
             yield put({
               type: reducer,
               payload: response.data,
+            });
+          // }
+        } else if (type === 'dashboard/fetchData') {
+            // 过滤数据
+          const rawData = response.data
+          const raw = rawData.getTopNServiceThroughput
+          const { env, projects } = serviceFilterKey
+          const prefixes = getPrefixes(env, projects)
+          console.log(prefixes, "dashboard prefixes")
+          const filterServiceList = getFilterServiceList(prefixes, raw)
+          console.log(filterServiceList, "dashboard filter services")
+          rawData.getTopNServiceThroughput = filterServiceList
+            yield put({
+              type: 'saveData',
+              payload: rawData,
             });
           }
           else {
-            yield put({
-              type: reducer,
-              payload: response.data,
-            });
-          }
-        } else {
             yield put({
               type: 'saveData',
               payload: response.data,

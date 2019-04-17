@@ -27,6 +27,7 @@ const codeMessage = {
 };
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
+    console.log(response, response.headers, "response object")
     const { headers } = response;
     if (headers.invalid) {
       let win = window
