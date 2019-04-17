@@ -27,14 +27,14 @@ const codeMessage = {
 };
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
-    console.log(response, response.headers, "response object")
     const { headers } = response;
-    if (headers.invalid) {
+    console.log(headers.has("invalid"), headers.get("invalid"))
+    if (headers.get("invalid")) {
       let win = window
       if (win !== win.top) {
         win = win.top
       }
-      win.location.href = headers.url
+      win.location.href = headers.get("url")
     }
     return response;
   }
