@@ -64,6 +64,7 @@ export default class ServiceInstanceLitePanel extends PureComponent {
           </Col>
           <Col span={24}>
             <ChartCard
+              titleStyleObj={{ fontSize: 25, top: 9, position:"relative", lineHeight: 17 }}
               title={`Ins:${serviceInstanceInfo.name} Throughput`}
               total={`${avgTS(getServiceInstanceThroughputTrend.values)} cpm`}
               contentHeight={46}
@@ -78,6 +79,7 @@ export default class ServiceInstanceLitePanel extends PureComponent {
           </Col>
           <Col span={24}>
             <ChartCard
+              titleStyleObj={{ fontSize: 25, top: 9, position:"relative", lineHeight: 17 }}
               title={`Ins:${serviceInstanceInfo.name} Response Time`}
               total={`${avgTS(getServiceInstanceResponseTimeTrend.values)} ms`}
               contentHeight={46}
@@ -95,6 +97,7 @@ export default class ServiceInstanceLitePanel extends PureComponent {
           </Col>
           <Col span={24}>
             <ChartCard
+              titleStyleObj={{ fontSize: 25, top: 9, position:"relative", lineHeight: 17 }}
               title={`Ins:${serviceInstanceInfo.name} SLA`}
               total={`${(avgTS(getServiceInstanceSLA.values) / 100).toFixed(2)} %`}
               contentHeight={46}

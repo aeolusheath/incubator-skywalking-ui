@@ -28,7 +28,6 @@ const codeMessage = {
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     const { headers } = response;
-    console.log(headers.has("invalid"), headers.get("invalid"))
     if (headers.get("invalid")) {
       let win = window
       if (win !== win.top) {

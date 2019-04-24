@@ -32,6 +32,7 @@ const ChartCard = ({
   children,
   chartBodyStyle = {},
   hasChartTop = true,
+  titleStyleObj = {},
   ...rest
 }) => {
   const content = (
@@ -44,12 +45,26 @@ const ChartCard = ({
         <div className={styles.avatar}>{avatar}</div>
         <div className={styles.metaWrap}>
           <div className={styles.meta}>
-            <span className={styles.title}>{title}</span>
+            <span
+              style={{
+                lineHeight: titleStyleObj.lineHeight ? `${titleStyleObj.lineHeight  }px` : '22px',
+              }}
+              className={styles.title}
+            >{title}
+            </span>
             <span className={styles.action}>{action}</span>
           </div>
           {// eslint-disable-next-line
           total !== undefined && (
-            <div className={styles.total}>{total}</div>
+          <div
+            style={{
+                    fontSize: titleStyleObj.fontSize,
+                    top: titleStyleObj.top,
+                    position: titleStyleObj.position,
+              }}
+            className={styles.total}
+          >{total}
+          </div>
           )}
         </div>
       </div>

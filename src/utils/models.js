@@ -251,9 +251,9 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
             formatData = {
               serviceId: filterServiceList,
             }
-            console.log("filter servicelist", data)
+            // console.log("filter servicelist", data)
           }
-          console.log(data, "data")
+          // console.log(data, "data")
           yield put({
             type: 'saveOptions',
             payload: formatData,
@@ -286,9 +286,7 @@ export function base({ namespace, dataQuery, optionsQuery, defaultOption, state 
           const raw = rawData.getTopNServiceThroughput
           const { env, projects } = serviceFilterKey
           const prefixes = getPrefixes(env, projects)
-          console.log(prefixes, "dashboard prefixes")
           const filterServiceList = getFilterServiceList(prefixes, raw)
-          console.log(filterServiceList, "dashboard filter services")
           rawData.getTopNServiceThroughput = filterServiceList
             yield put({
               type: 'saveData',
