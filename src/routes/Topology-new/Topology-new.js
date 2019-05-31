@@ -472,9 +472,11 @@ export default class Topology extends PureComponent {
                 height={200}
                 onClick={(d, responseTimeRange) => redirect(history, '/trace', { values: { duration: generateDuration({
                   from() {
+                    console.log("what is d from", d)
                     return d.start;
                   },
                   to() {
+                    console.log("what is d to", d)
                     return d.end;
                   },
                 }),
